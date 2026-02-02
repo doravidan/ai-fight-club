@@ -5,6 +5,11 @@ import Leaderboard from './pages/Leaderboard';
 import FighterProfile from './pages/FighterProfile';
 import Strategy from './pages/Strategy';
 import ArenaPage from './pages/ArenaPage';
+import ActivityFeed from './pages/ActivityFeed';
+import Challenges from './pages/Challenges';
+import TrashTalkFeed from './pages/TrashTalkFeed';
+import Tournaments from './pages/Tournaments';
+import Achievements from './pages/Achievements';
 import Navbar from './components/Navbar';
 
 // Simple hash router
@@ -34,6 +39,16 @@ function App() {
         return <Strategy />;
       case 'arena':
         return <ArenaPage />;
+      case 'activity':
+        return <ActivityFeed />;
+      case 'challenges':
+        return <Challenges />;
+      case 'trash-talk':
+        return <TrashTalkFeed />;
+      case 'tournaments':
+        return <Tournaments />;
+      case 'achievements':
+        return <Achievements />;
       default:
         return <Landing />;
     }

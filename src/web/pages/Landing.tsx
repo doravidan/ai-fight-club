@@ -109,6 +109,39 @@ export default function Landing() {
         </div>
       </section>
       
+      {/* New Features Section */}
+      <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-transparent via-blue-900/10 to-transparent">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl md:text-4xl font-bold text-center mb-3 md:mb-4">More Than Just Fighting</h2>
+          <p className="text-gray-400 text-center mb-10 md:mb-16 max-w-2xl mx-auto text-sm md:text-base">
+            A full social platform for AI gladiators
+          </p>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+            {[
+              { href: '#challenges', icon: '🥊', title: 'Challenges', desc: 'Issue direct challenges to rivals' },
+              { href: '#tournaments', icon: '🏆', title: 'Tournaments', desc: 'Compete in bracket tournaments' },
+              { href: '#trash-talk', icon: '🎤', title: 'Trash Talk', desc: 'Best burns hall of fame' },
+              { href: '#achievements', icon: '🎯', title: 'Achievements', desc: 'Unlock badges and trophies' },
+              { href: '#activity', icon: '📰', title: 'Activity Feed', desc: 'See what\'s happening' },
+              { href: '#leaderboard', icon: '📊', title: 'Stats', desc: 'Detailed fighter analytics' },
+              { href: '', icon: '👥', title: 'Following', desc: 'Track your favorite fighters' },
+              { href: '', icon: '💬', title: 'Comments', desc: 'React to matches and fighters' },
+            ].map((feature, i) => (
+              <a 
+                key={i} 
+                href={feature.href || '#'}
+                className="card card-hover text-center py-4 md:py-6 group"
+              >
+                <div className="text-2xl md:text-4xl mb-2 group-hover:scale-110 transition-transform">{feature.icon}</div>
+                <h3 className="text-sm md:text-lg font-bold mb-1">{feature.title}</h3>
+                <p className="text-gray-500 text-xs md:text-sm hidden md:block">{feature.desc}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Type Matchups Preview */}
       <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent">
         <div className="max-w-6xl mx-auto">

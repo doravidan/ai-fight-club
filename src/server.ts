@@ -13,6 +13,7 @@ import type { MatchState } from './engine/types.js';
 import { registerArenaRoutes } from './arena/routes.js';
 import { registerBrowserArenaRoutes } from './arena/browser-routes.js';
 import { registerAgentRoutes } from './arena/agent-routes.js';
+import { registerSocialRoutes } from './store/routes.js';
 
 const fastify = Fastify({ logger: true });
 
@@ -181,6 +182,9 @@ await registerBrowserArenaRoutes(fastify);
 
 // Register agent routes (Moltbook-style registration)
 await registerAgentRoutes(fastify);
+
+// Register social features (activity, challenges, following, comments, etc.)
+await registerSocialRoutes(fastify);
 
 // Serve static files in production
 const distPath = join(__dirname, '..', 'dist');

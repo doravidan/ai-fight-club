@@ -8,6 +8,7 @@ export default function Navbar({ currentPage }: NavbarProps) {
   const [stats, setStats] = useState({ totalBots: 0, totalGames: 0, queueSize: 0 });
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   
   useEffect(() => {
     fetch('/api/arena/stats')
@@ -20,12 +21,22 @@ export default function Navbar({ currentPage }: NavbarProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
-  const links = [
+  const mainLinks = [
     { href: '#', label: 'Home', icon: '🏠' },
     { href: '#arena', label: 'Arena', icon: '⚔️' },
     { href: '#leaderboard', label: 'Leaderboard', icon: '🏆' },
-    { href: '#strategy', label: 'Strategy', icon: '📖' },
+    { href: '#challenges', label: 'Challenges', icon: '🥊' },
   ];
+  
+  const moreLinks = [
+    { href: '#activity', label: 'Activity Feed', icon: '📰' },
+    { href: '#trash-talk', label: 'Trash Talk', icon: '🎤' },
+    { href: '#tournaments', label: 'Tournaments', icon: '🏅' },
+    { href: '#achievements', label: 'Achievements', icon: '🎯' },
+    { href: '#strategy', label: 'Strategy Guide', icon: '📖' },
+  ];
+  
+  const allLinks = [...mainLinks, ...moreLinks];
   
   return (
     <>
@@ -41,8 +52,8 @@ export default function Navbar({ currentPage }: NavbarProps) {
             </a>
             
             {/* Desktop Nav Links */}
-            <div className="hidden md:flex items-center gap-4 lg:gap-6">
-              {links.map(link => (
+            <div className="hidden md:flex items-center gap-2 lg:gap-4">
+              {mainLinks.map(link => (
                 <a
                   key={link.href}
                   href={link.href}
@@ -56,6 +67,44 @@ export default function Navbar({ currentPage }: NavbarProps) {
                   <span>{link.label}</span>
                 </a>
               ))}
+              
+              {/* More Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setMoreOpen(!moreOpen)}
+                  onBlur={() => setTimeout(() => setMoreOpen(false), 200)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-sm ${
+                    moreLinks.some(l => l.href === `#${currentPage}`)
+                      ? 'bg-purple-500/20 text-purple-400'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span>✨</span>
+                  <span>More</span>
+                  <svg className={`w-4 h-4 transition-transform ${moreOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {moreOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-slate-900 border border-gray-700 rounded-xl shadow-xl py-2">
+                    {moreLinks.map(link => (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        className={`flex items-center gap-3 px-4 py-2 transition-all text-sm ${
+                          link.href === `#${currentPage}`
+                            ? 'bg-purple-500/20 text-purple-400'
+                            : 'text-gray-400 hover:text-white hover:bg-white/5'
+                        }`}
+                      >
+                        <span>{link.icon}</span>
+                        <span>{link.label}</span>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             
             {/* Live Stats - Desktop only */}
@@ -94,9 +143,9 @@ export default function Navbar({ currentPage }: NavbarProps) {
         
         {/* Mobile Menu */}
         {menuOpen && (
-          <div className="md:hidden border-t border-white/10 bg-slate-950/95">
+          <div className="md:hidden border-t border-white/10 bg-slate-950/95 max-h-[80vh] overflow-y-auto">
             <div className="px-4 py-4 space-y-2">
-              {links.map(link => (
+              {allLinks.map(link => (
                 <a
                   key={link.href}
                   href={link.href}

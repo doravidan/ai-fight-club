@@ -3,6 +3,7 @@
 import { processTurn, checkWinner } from '../engine/combat.js';
 import { getFighterDecision } from '../ai/llm.js';
 import type { FighterCard, Player, MatchState, TurnResult } from '../engine/types.js';
+import { addTrashTalk, addActivity, checkAndAwardAchievements } from '../store/index.js';
 
 const MAX_TURNS = 30;
 
@@ -90,6 +91,18 @@ export async function runMatch(
     console.log(`🗣️ ${player2.active.name}: "${decision2.trashTalk}"`);
     console.log(`⚔️ Action: ${JSON.stringify(decision2.action)}\n`);
 
+    // Save trash talks to store
+    if (decision1.trashTalk && decision1.trashTalk.length > 10) {
+      try {
+        addTrashTalk(matchId, 'p1', player1.active.name, decision1.trashTalk, turn);
+      } catch (e) { /* ignore */ }
+    }
+    if (decision2.trashTalk && decision2.trashTalk.length > 10) {
+      try {
+        addTrashTalk(matchId, 'p2', player2.active.name, decision2.trashTalk, turn);
+      } catch (e) { /* ignore */ }
+    }
+
     // Process the turn
     const { result: turnResult, p1KO, p2KO } = processTurn(
       player1,
@@ -124,6 +137,23 @@ export async function runMatch(
       } else {
         console.log(`🏆 WINNER: ${winner}!`);
         console.log(`Final Score - ${player1.name}: ${player1.knockouts} KOs | ${player2.name}: ${player2.knockouts} KOs`);
+        
+        // Add activity event
+        try {
+          const winnerId = winner === player1.name ? 'p1' : 'p2';
+          const loserId = winner === player1.name ? 'p2' : 'p1';
+          const winnerName = winner === player1.name ? player1.name : player2.name;
+          const loserName = winner === player1.name ? player2.name : player1.name;
+          
+          addActivity({
+            type: 'match_result',
+            actorId: winnerId,
+            actorName: winnerName,
+            targetId: loserId,
+            targetName: loserName,
+            data: { matchId, won: true, turns: turn },
+          });
+        } catch (e) { /* ignore */ }
       }
       console.log(`${'═'.repeat(60)}\n`);
 
