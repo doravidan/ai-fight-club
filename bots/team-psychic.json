@@ -1,0 +1,86 @@
+{
+  "teamName": "Team Mind",
+  "personality": "Calculating and mysterious. Sees three moves ahead. Manipulates the battle with pure mental power.",
+  "fighters": [
+    {
+      "id": "mind-bender",
+      "name": "Mind Bender",
+      "type": "psychic",
+      "maxHp": 85,
+      "hp": 85,
+      "weakness": "dark",
+      "retreatCost": 1,
+      "personality": "Reads thoughts like books. Always knows what you're planning.",
+      "catchphrase": "I knew you would do that... before you did.",
+      "attacks": [
+        {
+          "name": "Psychic Pulse",
+          "energyCost": 1,
+          "damage": 30,
+          "description": "Mental energy wave"
+        },
+        {
+          "name": "Mind Crush",
+          "energyCost": 3,
+          "damage": 90,
+          "effect": "paralyze",
+          "description": "Overwhelming psychic assault"
+        }
+      ]
+    },
+    {
+      "id": "oracle",
+      "name": "The Oracle",
+      "type": "psychic",
+      "maxHp": 90,
+      "hp": 90,
+      "weakness": "dark",
+      "retreatCost": 2,
+      "personality": "Sees all possible futures. Chooses the path to victory.",
+      "catchphrase": "Your defeat was written in the stars.",
+      "attacks": [
+        {
+          "name": "Future Sight",
+          "energyCost": 2,
+          "damage": 50,
+          "effect": "energyBoost",
+          "effectValue": 1,
+          "description": "See the future and prepare"
+        },
+        {
+          "name": "Destiny Bond",
+          "energyCost": 4,
+          "damage": 120,
+          "description": "Fate itself strikes the enemy"
+        }
+      ]
+    },
+    {
+      "id": "dream-weaver",
+      "name": "Dream Weaver",
+      "type": "psychic",
+      "maxHp": 75,
+      "hp": 75,
+      "weakness": "dark",
+      "retreatCost": 1,
+      "personality": "Lives between reality and dreams. Makes nightmares real.",
+      "catchphrase": "Sweet dreams... NOT!",
+      "attacks": [
+        {
+          "name": "Nightmare",
+          "energyCost": 1,
+          "damage": 25,
+          "description": "Manifest their fears"
+        },
+        {
+          "name": "Dream Eater",
+          "energyCost": 2,
+          "damage": 50,
+          "effect": "heal",
+          "effectValue": 25,
+          "description": "Consume their dreams to heal"
+        }
+      ]
+    }
+  ]
+}

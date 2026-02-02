@@ -1,0 +1,82 @@
+{
+  "teamName": "Team Shadow",
+  "personality": "Ruthless and cunning. Fights dirty when needed. The shadows are our ally, and deception is our weapon.",
+  "fighters": [
+    {
+      "id": "shadow-blade",
+      "name": "Shadow Blade",
+      "type": "dark",
+      "maxHp": 85,
+      "hp": 85,
+      "weakness": "fighting",
+      "retreatCost": 1,
+      "personality": "Silent assassin. Strikes from the shadows. No mercy, no hesitation.",
+      "catchphrase": "You won't see me coming... or going.",
+      "attacks": [
+        {
+          "name": "Shadow Strike",
+          "energyCost": 1,
+          "damage": 35,
+          "description": "Strike from the darkness"
+        },
+        {
+          "name": "Assassinate",
+          "energyCost": 3,
+          "damage": 100,
+          "description": "Critical hit to vitals"
+        }
+      ]
+    },
+    {
+      "id": "void-walker",
+      "name": "Void Walker",
+      "type": "dark",
+      "maxHp": 95,
+      "hp": 95,
+      "weakness": "fighting",
+      "retreatCost": 2,
+      "personality": "Exists between dimensions. Reality bends around them.",
+      "catchphrase": "I am the void, and the void hungers.",
+      "attacks": [
+        {
+          "name": "Dark Pulse",
+          "energyCost": 2,
+          "damage": 50,
+          "description": "Wave of dark energy"
+        },
+        {
+          "name": "Oblivion",
+          "energyCost": 4,
+          "damage": 120,
+          "description": "Consume everything in darkness"
+        }
+      ]
+    },
+    {
+      "id": "nightmare-imp",
+      "name": "Nightmare Imp",
+      "type": "dark",
+      "maxHp": 65,
+      "hp": 65,
+      "weakness": "fighting",
+      "retreatCost": 0,
+      "personality": "Mischievous trickster. Loves chaos and confusion.",
+      "catchphrase": "Chaos is a ladder... and I'm climbing!",
+      "attacks": [
+        {
+          "name": "Hex",
+          "energyCost": 1,
+          "damage": 20,
+          "effect": "burn",
+          "description": "Cursed attack that burns"
+        },
+        {
+          "name": "Shadow Ball",
+          "energyCost": 2,
+          "damage": 60,
+          "description": "Concentrated dark energy"
+        }
+      ]
+    }
+  ]
+}

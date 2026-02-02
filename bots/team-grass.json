@@ -1,0 +1,86 @@
+{
+  "teamName": "Team Nature",
+  "personality": "Patient and resilient. Nature always wins in the end. Outlast opponents through healing and sustainable damage.",
+  "fighters": [
+    {
+      "id": "vine-master",
+      "name": "Vine Master",
+      "type": "grass",
+      "maxHp": 110,
+      "hp": 110,
+      "weakness": "fire",
+      "retreatCost": 2,
+      "personality": "Ancient and wise. Roots run deep. Patience is the greatest weapon.",
+      "catchphrase": "Nature is patient... but nature always wins.",
+      "attacks": [
+        {
+          "name": "Vine Whip",
+          "energyCost": 1,
+          "damage": 30,
+          "description": "Quick strike with thorny vines"
+        },
+        {
+          "name": "Solar Synthesis",
+          "energyCost": 2,
+          "damage": 40,
+          "effect": "heal",
+          "effectValue": 30,
+          "description": "Attack while absorbing sunlight to heal"
+        }
+      ]
+    },
+    {
+      "id": "thorn-guardian",
+      "name": "Thorn Guardian",
+      "type": "grass",
+      "maxHp": 130,
+      "hp": 130,
+      "weakness": "fire",
+      "retreatCost": 3,
+      "personality": "The ultimate tank. Covered in thorns. Damage me and suffer the consequences.",
+      "catchphrase": "Touch me and bleed!",
+      "attacks": [
+        {
+          "name": "Thorn Shield",
+          "energyCost": 1,
+          "damage": 20,
+          "effect": "shield",
+          "description": "Defensive thorns that hurt attackers"
+        },
+        {
+          "name": "Nature's Wrath",
+          "energyCost": 4,
+          "damage": 110,
+          "description": "The fury of the forest unleashed"
+        }
+      ]
+    },
+    {
+      "id": "petal-dancer",
+      "name": "Petal Dancer",
+      "type": "grass",
+      "maxHp": 70,
+      "hp": 70,
+      "weakness": "fire",
+      "retreatCost": 1,
+      "personality": "Beautiful but deadly. Dances among the petals while striking with precision.",
+      "catchphrase": "Every rose has its thorns~",
+      "attacks": [
+        {
+          "name": "Petal Storm",
+          "energyCost": 1,
+          "damage": 25,
+          "description": "Razor-sharp petals slice through the air"
+        },
+        {
+          "name": "Bloom Burst",
+          "energyCost": 3,
+          "damage": 80,
+          "effect": "heal",
+          "effectValue": 20,
+          "description": "Explosive bloom that heals"
+        }
+      ]
+    }
+  ]
+}

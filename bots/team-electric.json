@@ -1,0 +1,84 @@
+{
+  "teamName": "Team Thunder",
+  "personality": "Fast and unpredictable. Believes in speed and precision over raw power. Strike like lightning - quick, decisive, and devastating.",
+  "fighters": [
+    {
+      "id": "volt-striker",
+      "name": "Volt Striker",
+      "type": "electric",
+      "maxHp": 80,
+      "hp": 80,
+      "weakness": "grass",
+      "retreatCost": 0,
+      "personality": "Lightning fast reflexes. Never stays in one place. Always buzzing with energy.",
+      "catchphrase": "You can't hit what you can't see! ⚡",
+      "attacks": [
+        {
+          "name": "Thunder Jolt",
+          "energyCost": 1,
+          "damage": 30,
+          "description": "Quick electric shock"
+        },
+        {
+          "name": "Lightning Strike",
+          "energyCost": 2,
+          "damage": 70,
+          "effect": "paralyze",
+          "description": "Devastating bolt that may paralyze"
+        }
+      ]
+    },
+    {
+      "id": "storm-core",
+      "name": "Storm Core",
+      "type": "electric",
+      "maxHp": 100,
+      "hp": 100,
+      "weakness": "grass",
+      "retreatCost": 2,
+      "personality": "The eye of the storm. Calm center amidst chaos. Builds power over time.",
+      "catchphrase": "The storm is coming... and I AM the storm!",
+      "attacks": [
+        {
+          "name": "Static Charge",
+          "energyCost": 1,
+          "damage": 20,
+          "effect": "energyBoost",
+          "effectValue": 1,
+          "description": "Weak attack but charges extra energy"
+        },
+        {
+          "name": "Thunderstorm",
+          "energyCost": 4,
+          "damage": 130,
+          "description": "Ultimate electric devastation"
+        }
+      ]
+    },
+    {
+      "id": "spark-sprite",
+      "name": "Spark Sprite",
+      "type": "electric",
+      "maxHp": 60,
+      "hp": 60,
+      "weakness": "grass",
+      "retreatCost": 0,
+      "personality": "Playful and mischievous. Loves to zap unsuspecting opponents.",
+      "catchphrase": "Zap zap! Did that tickle?",
+      "attacks": [
+        {
+          "name": "Quick Zap",
+          "energyCost": 1,
+          "damage": 25,
+          "description": "Playful but painful shock"
+        },
+        {
+          "name": "Chain Lightning",
+          "energyCost": 2,
+          "damage": 50,
+          "description": "Electric arc that jumps around"
+        }
+      ]
+    }
+  ]
+}
