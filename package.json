@@ -6,7 +6,9 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "tsx watch src/server.ts",
     "client": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run build:server",
+    "build:server": "echo 'Server uses tsx'",
+    "start": "tsx src/server.ts",
     "fight": "tsx src/cli.ts"
   },
   "dependencies": {

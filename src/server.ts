@@ -2,7 +2,12 @@
 
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
-import { readFileSync, readdirSync } from 'fs';
+import fastifyStatic from '@fastify/static';
+import { readFileSync, readdirSync, existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 import { runMatch, MatchEvent, TeamConfig } from './match/runner.js';
 import type { MatchState } from './engine/types.js';
 
@@ -149,11 +154,29 @@ fastify.get('/api/matches', async () => {
 // Health check
 fastify.get('/health', async () => ({ status: 'ok', version: '2.0' }));
 
+// Serve static files in production
+const distPath = join(__dirname, '..', 'dist');
+if (existsSync(distPath)) {
+  await fastify.register(fastifyStatic, {
+    root: distPath,
+    prefix: '/',
+  });
+  
+  // SPA fallback
+  fastify.setNotFoundHandler((req, reply) => {
+    if (!req.url.startsWith('/api')) {
+      return reply.sendFile('index.html');
+    }
+    reply.status(404).send({ error: 'Not found' });
+  });
+}
+
 // Start server
+const PORT = parseInt(process.env.PORT || '3001');
 const start = async () => {
   try {
-    await fastify.listen({ port: 3001, host: '0.0.0.0' });
-    console.log('🎴 AI Fight Club v2 API running on http://localhost:3001');
+    await fastify.listen({ port: PORT, host: '0.0.0.0' });
+    console.log(`🎴 AI Fight Club v2 running on port ${PORT}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
