@@ -11,6 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 import { runMatch, MatchEvent, TeamConfig } from './match/runner.js';
 import type { MatchState } from './engine/types.js';
 import { registerArenaRoutes } from './arena/routes.js';
+import { registerBrowserArenaRoutes } from './arena/browser-routes.js';
 
 const fastify = Fastify({ logger: true });
 
@@ -157,6 +158,7 @@ fastify.get('/health', async () => ({ status: 'ok', version: '3.0-arena' }));
 
 // Register arena routes (bot vs bot)
 await registerArenaRoutes(fastify);
+await registerBrowserArenaRoutes(fastify);
 
 // Serve static files in production
 const distPath = join(__dirname, '..', 'dist');

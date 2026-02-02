@@ -1,4 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Arena from './Arena';
+
+// Simple router
+const useRoute = () => {
+  const [route, setRoute] = useState(window.location.hash.slice(1) || 'home');
+  useEffect(() => {
+    const handler = () => setRoute(window.location.hash.slice(1) || 'home');
+    window.addEventListener('hashchange', handler);
+    return () => window.removeEventListener('hashchange', handler);
+  }, []);
+  return route;
+};
 
 const TYPE_COLORS: Record<string, string> = {
   fire: '#FF6B35',
@@ -314,7 +326,20 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 function App() {
+  const route = useRoute();
   const [teams, setTeams] = useState<Team[]>([]);
+  
+  // Route to Arena
+  if (route === 'arena') {
+    return (
+      <div style={styles.container}>
+        <nav style={{ marginBottom: '20px', textAlign: 'center' }}>
+          <a href="#home" style={{ color: '#888', marginRight: '20px' }}>← Back to Demo</a>
+        </nav>
+        <Arena />
+      </div>
+    );
+  }
   const [team1, setTeam1] = useState('team-fire');
   const [team2, setTeam2] = useState('team-water');
   const [match, setMatch] = useState<MatchState | null>(null);
@@ -492,6 +517,21 @@ function App() {
       <header style={styles.header}>
         <h1 style={styles.title}>🎴 AI FIGHT CLUB v2 🎴</h1>
         <p style={styles.subtitle}>Pokemon-style battles with visible AI thinking</p>
+        <a 
+          href="#arena" 
+          style={{
+            display: 'inline-block',
+            marginTop: '15px',
+            padding: '10px 25px',
+            background: 'linear-gradient(90deg, #4A90D9, #7AC74C)',
+            borderRadius: '20px',
+            color: '#fff',
+            textDecoration: 'none',
+            fontWeight: 'bold'
+          }}
+        >
+          🏟️ Arena Mode - Play Online!
+        </a>
       </header>
 
       <div style={styles.controls}>
