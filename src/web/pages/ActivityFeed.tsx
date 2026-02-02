@@ -11,24 +11,53 @@ interface ActivityEvent {
   timestamp: string;
 }
 
-const eventIcons: Record<string, string> = {
-  match_result: '⚔️',
-  new_fighter: '🆕',
-  achievement: '🏆',
-  challenge: '📣',
-  comment: '💬',
-  follow: '👥',
-  level_up: '⬆️',
-};
+const avatarColors = ['avatar-fire', 'avatar-water', 'avatar-grass', 'avatar-electric', 'avatar-psychic', 'avatar-dark'];
+const getAvatarColor = (name: string) => avatarColors[name.charCodeAt(0) % avatarColors.length];
 
-const eventMessages: Record<string, (e: ActivityEvent) => string> = {
-  match_result: (e) => `${e.actorName} ${e.data.won ? 'defeated' : 'lost to'} ${e.targetName}`,
-  new_fighter: (e) => `${e.actorName} joined the arena!`,
-  achievement: (e) => `${e.actorName} unlocked "${e.data.achievementName}"`,
-  challenge: (e) => `${e.actorName} challenged ${e.targetName}${e.data.message ? `: "${e.data.message}"` : ''}`,
-  comment: (e) => `${e.actorName} commented on ${e.data.targetType}`,
-  follow: (e) => `${e.actorName} is now following ${e.targetName}`,
-  level_up: (e) => `${e.actorName} reached ${e.data.newElo} ELO!`,
+const eventConfig: Record<string, { icon: string; getMessage: (e: ActivityEvent) => JSX.Element }> = {
+  match_result: {
+    icon: '⚔️',
+    getMessage: (e) => (
+      <>
+        <a href={`#fighter/${e.actorName}`} className="font-semibold hover:text-[var(--accent)]">{e.actorName}</a>
+        {e.data.won ? ' defeated ' : ' lost to '}
+        <a href={`#fighter/${e.targetName}`} className="font-semibold hover:text-[var(--accent)]">{e.targetName}</a>
+      </>
+    ),
+  },
+  new_fighter: {
+    icon: '🆕',
+    getMessage: (e) => <><a href={`#fighter/${e.actorName}`} className="font-semibold hover:text-[var(--accent)]">{e.actorName}</a> joined the arena!</>,
+  },
+  achievement: {
+    icon: '🏆',
+    getMessage: (e) => <><a href={`#fighter/${e.actorName}`} className="font-semibold hover:text-[var(--accent)]">{e.actorName}</a> unlocked "{e.data.achievementName}"</>,
+  },
+  challenge: {
+    icon: '📣',
+    getMessage: (e) => (
+      <>
+        <a href={`#fighter/${e.actorName}`} className="font-semibold hover:text-[var(--accent)]">{e.actorName}</a>
+        {' challenged '}
+        <a href={`#fighter/${e.targetName}`} className="font-semibold hover:text-[var(--accent)]">{e.targetName}</a>
+        {e.data.message && <span className="text-[var(--text-muted)]"> — "{e.data.message}"</span>}
+      </>
+    ),
+  },
+  comment: {
+    icon: '💬',
+    getMessage: (e) => <><a href={`#fighter/${e.actorName}`} className="font-semibold hover:text-[var(--accent)]">{e.actorName}</a> commented on a {e.data.targetType}</>,
+  },
+  follow: {
+    icon: '👥',
+    getMessage: (e) => (
+      <>
+        <a href={`#fighter/${e.actorName}`} className="font-semibold hover:text-[var(--accent)]">{e.actorName}</a>
+        {' started following '}
+        <a href={`#fighter/${e.targetName}`} className="font-semibold hover:text-[var(--accent)]">{e.targetName}</a>
+      </>
+    ),
+  },
 };
 
 function timeAgo(date: string): string {
@@ -58,68 +87,101 @@ export default function ActivityFeed() {
     ? events 
     : events.filter(e => e.type === filter);
 
+  const filters = [
+    { key: 'all', label: 'All' },
+    { key: 'match_result', label: 'Matches' },
+    { key: 'challenge', label: 'Challenges' },
+    { key: 'achievement', label: 'Achievements' },
+    { key: 'new_fighter', label: 'New Fighters' },
+  ];
+
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-4xl font-black mb-2">📰 Activity Feed</h1>
-      <p className="text-gray-400 mb-8">What's happening in the arena</p>
+    <div className="pt-20 min-h-screen">
+      <div className="container-main py-8">
+        <div className="layout-with-sidebar">
+          {/* Main Content */}
+          <div>
+            <div className="mb-6">
+              <h1 className="text-3xl font-black mb-2">📰 Activity Feed</h1>
+              <p className="text-[var(--text-secondary)]">What's happening in the arena</p>
+            </div>
 
-      {/* Filters */}
-      <div className="flex gap-2 mb-6 flex-wrap">
-        {['all', 'match_result', 'challenge', 'achievement', 'new_fighter'].map(f => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              filter === f
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-            }`}
-          >
-            {f === 'all' ? 'All' : f.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())}
-          </button>
-        ))}
-      </div>
+            {/* Filters */}
+            <div className="card p-3 mb-4">
+              <div className="flex gap-2 flex-wrap">
+                {filters.map(f => (
+                  <button
+                    key={f.key}
+                    onClick={() => setFilter(f.key)}
+                    className={`btn text-sm ${filter === f.key ? 'btn-primary' : 'btn-ghost'}`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-      {loading ? (
-        <div className="text-center py-20">
-          <div className="animate-spin text-4xl">⚔️</div>
-          <p className="mt-4 text-gray-500">Loading activity...</p>
-        </div>
-      ) : filteredEvents.length === 0 ? (
-        <div className="text-center py-20 bg-gray-900/50 rounded-xl">
-          <p className="text-6xl mb-4">🦗</p>
-          <p className="text-gray-400">No activity yet. Challenge someone to get things started!</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {filteredEvents.map(event => (
-            <div
-              key={event.id}
-              className="bg-gray-900/50 rounded-xl p-4 flex items-start gap-4 hover:bg-gray-900/70 transition-all border border-gray-800"
-            >
-              <div className="text-3xl">
-                {eventIcons[event.type] || '📝'}
-              </div>
-              <div className="flex-1">
-                <p className="text-white">
-                  {eventMessages[event.type]?.(event) || `${event.actorName} did something`}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {timeAgo(event.timestamp)}
-                </p>
-              </div>
-              {event.actorId && (
-                <a
-                  href={`#fighter/${event.actorName}`}
-                  className="text-purple-400 hover:text-purple-300 text-sm"
-                >
-                  View Profile →
-                </a>
+            {/* Feed */}
+            <div className="card">
+              {loading ? (
+                <div className="p-12 text-center">
+                  <div className="animate-spin text-4xl mb-4">⚔️</div>
+                  <p className="text-[var(--text-muted)]">Loading activity...</p>
+                </div>
+              ) : filteredEvents.length === 0 ? (
+                <div className="p-12 text-center">
+                  <p className="text-4xl mb-4">🦗</p>
+                  <p className="text-[var(--text-muted)]">No activity yet. Challenge someone to get things started!</p>
+                </div>
+              ) : (
+                <div>
+                  {filteredEvents.map(event => {
+                    const config = eventConfig[event.type] || { icon: '📝', getMessage: () => 'Something happened' };
+                    return (
+                      <div key={event.id} className="feed-item">
+                        <div className={`avatar avatar-sm ${getAvatarColor(event.actorName)}`}>
+                          {event.actorName[0]}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm text-[var(--text-primary)]">
+                            {config.getMessage(event)}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs text-[var(--text-muted)]">{timeAgo(event.timestamp)}</span>
+                            <span className="text-xs">{config.icon}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
-          ))}
+          </div>
+
+          {/* Sidebar */}
+          <div className="sidebar space-y-4">
+            <div className="sidebar-card">
+              <h3>ℹ️ About Activity</h3>
+              <p className="text-sm text-[var(--text-secondary)]">
+                See what's happening in the arena — matches, challenges, achievements, and more.
+              </p>
+            </div>
+
+            <div className="sidebar-card">
+              <h3>🔥 Quick Actions</h3>
+              <div className="space-y-2">
+                <a href="#challenges" className="btn btn-secondary w-full text-sm">
+                  📣 Issue Challenge
+                </a>
+                <a href="#arena" className="btn btn-primary w-full text-sm">
+                  ⚔️ Enter Arena
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

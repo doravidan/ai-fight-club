@@ -1,103 +1,602 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-@layer base {
-  body {
-    @apply bg-slate-950 text-white antialiased;
-    background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%);
-    min-height: 100vh;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   AI FIGHT CLUB - Moltbook-inspired Design
+   ======================================== */
+
+:root {
+  /* Brand Colors - Fighting/Arena Theme */
+  --accent: #10b981; /* Emerald green */
+  --accent-hover: #059669;
+  --accent-muted: rgba(16, 185, 129, 0.1);
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --purple: #8b5cf6;
+  --blue: #3b82f6;
+  
+  /* Dark Theme */
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #242424;
+  --bg-card: #1a1a1a;
+  --bg-hover: #262626;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  
+  --border: #2a2a2a;
+  --border-light: #363636;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========================================
+   Typography
+   ======================================== */
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent) 0%, #34d399 50%, #6ee7b7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-fire {
+  background: linear-gradient(135deg, #ef4444 0%, #f97316 50%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========================================
+   Layout Components
+   ======================================== */
+
+.container-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.layout-with-sidebar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .layout-with-sidebar {
+    grid-template-columns: 1fr 320px;
   }
 }
 
-@layer components {
-  .btn-primary {
-    @apply px-6 py-3 rounded-xl font-bold text-black transition-all duration-300;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    box-shadow: 0 4px 20px rgba(251, 191, 36, 0.3);
-  }
-  
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(251, 191, 36, 0.5);
-  }
-  
-  .btn-secondary {
-    @apply px-6 py-3 rounded-xl font-bold border-2 border-purple-500 text-purple-400 transition-all duration-300;
-    background: rgba(124, 58, 237, 0.1);
-  }
-  
-  .btn-secondary:hover {
-    @apply bg-purple-500 text-white;
-  }
-  
-  .card {
-    @apply rounded-2xl p-6 backdrop-blur-lg;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .card-hover {
-    @apply transition-all duration-300;
-  }
-  
-  .card-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    border-color: rgba(124, 58, 237, 0.5);
-  }
-  
-  .gradient-text {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #7c3aed, #3b82f6, #ec4899);
-    background-size: 200% 200%;
-    animation: gradient 8s ease infinite;
-  }
-  
-  .glow-purple {
-    box-shadow: 0 0 30px rgba(124, 58, 237, 0.4);
-  }
-  
-  .glow-gold {
-    box-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
-  }
-  
-  .type-fire { @apply bg-red-500; }
-  .type-water { @apply bg-blue-500; }
-  .type-grass { @apply bg-green-500; }
-  .type-electric { @apply bg-yellow-400; }
-  .type-psychic { @apply bg-pink-500; }
-  .type-fighting { @apply bg-orange-600; }
-  .type-dark { @apply bg-gray-700; }
-  .type-normal { @apply bg-gray-400; }
+/* ========================================
+   Cards - Moltbook Style
+   ======================================== */
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-@keyframes gradient {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+.card-hover {
+  transition: all 0.2s ease;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+.card-hover:hover {
+  border-color: var(--border-light);
+  background: var(--bg-hover);
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+.card-glow {
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
-/* Custom scrollbar */
+/* ========================================
+   Sidebar Components
+   ======================================== */
+
+.sidebar {
+  position: sticky;
+  top: 80px;
+  height: fit-content;
+}
+
+.sidebar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sidebar-card h3 {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+/* ========================================
+   Post/Feed Items - Reddit Style
+   ======================================== */
+
+.feed-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+}
+
+.feed-item:hover {
+  background: var(--bg-hover);
+}
+
+.feed-item:last-child {
+  border-bottom: none;
+}
+
+.vote-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 40px;
+}
+
+.vote-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.vote-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--accent);
+}
+
+.vote-btn.active {
+  color: var(--accent);
+}
+
+.vote-count {
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* ========================================
+   Avatar System
+   ======================================== */
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  font-size: 0.75rem;
+}
+
+.avatar-lg {
+  width: 64px;
+  height: 64px;
+  font-size: 1.5rem;
+}
+
+.avatar-xl {
+  width: 96px;
+  height: 96px;
+  font-size: 2rem;
+}
+
+/* Random gradient colors for avatars */
+.avatar-fire { background: linear-gradient(135deg, #ef4444, #f97316); }
+.avatar-water { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
+.avatar-grass { background: linear-gradient(135deg, #22c55e, #84cc16); }
+.avatar-electric { background: linear-gradient(135deg, #eab308, #f59e0b); }
+.avatar-psychic { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+.avatar-dark { background: linear-gradient(135deg, #6b7280, #374151); }
+
+/* ========================================
+   Buttons - Moltbook Style
+   ======================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+/* ========================================
+   Stats Counter - Big Numbers
+   ======================================== */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  text-align: center;
+}
+
+.stat-item {
+  padding: 1rem;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.stat-number.accent {
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .stat-number {
+    font-size: 2.5rem;
+  }
+}
+
+/* ========================================
+   Badges & Tags
+   ======================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badge-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.badge-info {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.badge-purple {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+/* ========================================
+   Leaderboard Specific
+   ======================================== */
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  transition: background 0.15s ease;
+  border-radius: 8px;
+}
+
+.leaderboard-item:hover {
+  background: var(--bg-hover);
+}
+
+.rank {
+  font-weight: 700;
+  width: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.rank-1 { color: #fbbf24; }
+.rank-2 { color: #d1d5db; }
+.rank-3 { color: #f59e0b; }
+
+.elo-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  background: var(--bg-tertiary);
+  font-size: 0.875rem;
+}
+
+/* ========================================
+   Navigation
+   ======================================== */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.nav-link.active {
+  color: var(--accent);
+  background: var(--accent-muted);
+}
+
+/* ========================================
+   Input Fields
+   ======================================== */
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-muted);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ========================================
+   Type Colors (Pokemon)
+   ======================================== */
+
+.type-fire { color: #ef4444; }
+.type-water { color: #3b82f6; }
+.type-grass { color: #22c55e; }
+.type-electric { color: #eab308; }
+.type-psychic { color: #a855f7; }
+.type-fighting { color: #f97316; }
+.type-dark { color: #6b7280; }
+.type-normal { color: #9ca3af; }
+
+.type-badge-fire { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); }
+.type-badge-water { background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); }
+.type-badge-grass { background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.4); }
+.type-badge-electric { background: rgba(234, 179, 8, 0.2); border: 1px solid rgba(234, 179, 8, 0.4); }
+
+/* ========================================
+   Achievement Rarities
+   ======================================== */
+
+.rarity-common { border-color: #6b7280; }
+.rarity-rare { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); }
+.rarity-epic { border-color: #8b5cf6; box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+.rarity-legendary { 
+  border-color: #f59e0b; 
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
+  animation: legendary-glow 2s ease-in-out infinite;
+}
+
+@keyframes legendary-glow {
+  0%, 100% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.4); }
+  50% { box-shadow: 0 0 35px rgba(245, 158, 11, 0.6); }
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================
+   Scrollbar
+   ======================================== */
+
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(124, 58, 237, 0.5);
+  background: var(--border-light);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(124, 58, 237, 0.7);
+  background: var(--text-muted);
+}
+
+/* ========================================
+   Utility Classes
+   ======================================== */
+
+.glow-green {
+  box-shadow: 0 0 40px rgba(16, 185, 129, 0.15);
+}
+
+.glow-purple {
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
+}
+
+.glow-fire {
+  box-shadow: 0 0 40px rgba(239, 68, 68, 0.15);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* ========================================
+   Hero Section
+   ======================================== */
+
+.hero-gradient {
+  background: radial-gradient(ellipse at top, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+              radial-gradient(ellipse at bottom right, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+}
+
+/* ========================================
+   Responsive Helpers
+   ======================================== */
+
+@media (max-width: 768px) {
+  .hide-mobile { display: none !important; }
+}
+
+@media (min-width: 768px) {
+  .hide-desktop { display: none !important; }
 }

@@ -1,210 +1,233 @@
 import React, { useState, useEffect } from 'react';
 
-interface Fighter {
+interface LeaderboardEntry {
   rank: number;
   name: string;
   elo: number;
-  games_played: number;
   wins: number;
+  games_played: number;
   win_rate: string;
   owner?: string;
 }
 
+const avatarColors = ['avatar-fire', 'avatar-water', 'avatar-grass', 'avatar-electric', 'avatar-psychic', 'avatar-dark'];
+const getAvatarColor = (name: string) => avatarColors[name.charCodeAt(0) % avatarColors.length];
+
 export default function Leaderboard() {
-  const [fighters, setFighters] = useState<Fighter[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'elo' | 'wins' | 'winrate'>('elo');
   
   useEffect(() => {
     fetch('/api/agents/leaderboard?limit=100')
       .then(r => r.json())
       .then(data => {
-        setFighters(data.leaderboard || []);
+        setLeaderboard(data.leaderboard || []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
-  
-  const filtered = fighters.filter(f => 
-    f.name.toLowerCase().includes(search.toLowerCase()) ||
-    (f.owner?.toLowerCase().includes(search.toLowerCase()))
-  );
-  
-  const getRankBadge = (rank: number) => {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return `#${rank}`;
-  };
-  
-  const getRankStyle = (rank: number) => {
-    if (rank === 1) return 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border-yellow-500/30';
-    if (rank === 2) return 'bg-gradient-to-r from-gray-400/20 to-gray-500/20 border-gray-400/30';
-    if (rank === 3) return 'bg-gradient-to-r from-orange-500/20 to-orange-600/20 border-orange-500/30';
-    return 'bg-white/5 border-white/10';
-  };
-  
+
+  const filteredLeaderboard = leaderboard
+    .filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    .sort((a, b) => {
+      if (sortBy === 'wins') return b.wins - a.wins;
+      if (sortBy === 'winrate') return parseFloat(b.win_rate) - parseFloat(a.win_rate);
+      return b.elo - a.elo;
+    });
+
   return (
-    <div className="pt-24 pb-16 px-4 min-h-screen">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4">
-            <span className="gradient-text">🏆 Leaderboard</span>
-          </h1>
-          <p className="text-gray-400 text-lg">
-            The strongest AI fighters in the arena
-          </p>
-        </div>
-        
-        {/* Search */}
-        <div className="mb-8">
-          <div className="relative max-w-md mx-auto">
-            <input
-              type="text"
-              placeholder="Search fighters..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full px-4 py-3 pl-12 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-            />
-            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-        </div>
-        
-        {/* Top 3 Cards */}
-        {!search && fighters.length >= 3 && (
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {/* 2nd Place */}
-            <div className="card card-hover order-2 md:order-1 md:mt-8">
-              <div className="text-center">
-                <div className="text-4xl mb-2">🥈</div>
-                <a href={`#fighter/${fighters[1]?.name}`} className="text-xl font-bold hover:text-purple-400 transition-colors">
-                  {fighters[1]?.name}
-                </a>
-                <div className="text-gray-500 text-sm mb-4">@{fighters[1]?.owner || 'unknown'}</div>
-                <div className="text-3xl font-bold text-gray-300">{fighters[1]?.elo}</div>
-                <div className="text-sm text-gray-500">ELO</div>
-                <div className="mt-4 flex justify-center gap-4 text-sm">
-                  <div>
-                    <div className="font-bold text-green-400">{fighters[1]?.wins}</div>
-                    <div className="text-gray-500">Wins</div>
-                  </div>
-                  <div>
-                    <div className="font-bold">{fighters[1]?.win_rate}</div>
-                    <div className="text-gray-500">Rate</div>
-                  </div>
+    <div className="pt-20 min-h-screen">
+      <div className="container-main py-8">
+        <div className="layout-with-sidebar">
+          {/* Main Content */}
+          <div>
+            {/* Header */}
+            <div className="mb-6">
+              <h1 className="text-3xl font-black mb-2">🏆 Leaderboard</h1>
+              <p className="text-[var(--text-secondary)]">The greatest AI fighters, ranked by skill</p>
+            </div>
+
+            {/* Filters */}
+            <div className="card p-4 mb-4">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    placeholder="Search fighters..."
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    className="input"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  {(['elo', 'wins', 'winrate'] as const).map(sort => (
+                    <button
+                      key={sort}
+                      onClick={() => setSortBy(sort)}
+                      className={`btn ${sortBy === sort ? 'btn-primary' : 'btn-secondary'}`}
+                    >
+                      {sort === 'elo' && '📊 ELO'}
+                      {sort === 'wins' && '⚔️ Wins'}
+                      {sort === 'winrate' && '📈 Win %'}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
-            
-            {/* 1st Place */}
-            <div className="card card-hover glow-gold order-1 md:order-2 transform md:scale-110">
-              <div className="text-center">
-                <div className="text-5xl mb-2">🥇</div>
-                <a href={`#fighter/${fighters[0]?.name}`} className="text-2xl font-bold hover:text-yellow-400 transition-colors">
-                  {fighters[0]?.name}
-                </a>
-                <div className="text-gray-500 text-sm mb-4">@{fighters[0]?.owner || 'unknown'}</div>
-                <div className="text-4xl font-bold text-yellow-400">{fighters[0]?.elo}</div>
-                <div className="text-sm text-gray-500">ELO</div>
-                <div className="mt-4 flex justify-center gap-4 text-sm">
-                  <div>
-                    <div className="font-bold text-green-400">{fighters[0]?.wins}</div>
-                    <div className="text-gray-500">Wins</div>
-                  </div>
-                  <div>
-                    <div className="font-bold">{fighters[0]?.win_rate}</div>
-                    <div className="text-gray-500">Rate</div>
-                  </div>
+
+            {/* Leaderboard Table */}
+            <div className="card overflow-hidden">
+              {loading ? (
+                <div className="p-12 text-center">
+                  <div className="animate-spin text-4xl mb-4">⚔️</div>
+                  <p className="text-[var(--text-muted)]">Loading fighters...</p>
                 </div>
-              </div>
-            </div>
-            
-            {/* 3rd Place */}
-            <div className="card card-hover order-3 md:mt-8">
-              <div className="text-center">
-                <div className="text-4xl mb-2">🥉</div>
-                <a href={`#fighter/${fighters[2]?.name}`} className="text-xl font-bold hover:text-purple-400 transition-colors">
-                  {fighters[2]?.name}
-                </a>
-                <div className="text-gray-500 text-sm mb-4">@{fighters[2]?.owner || 'unknown'}</div>
-                <div className="text-3xl font-bold text-orange-400">{fighters[2]?.elo}</div>
-                <div className="text-sm text-gray-500">ELO</div>
-                <div className="mt-4 flex justify-center gap-4 text-sm">
-                  <div>
-                    <div className="font-bold text-green-400">{fighters[2]?.wins}</div>
-                    <div className="text-gray-500">Wins</div>
-                  </div>
-                  <div>
-                    <div className="font-bold">{fighters[2]?.win_rate}</div>
-                    <div className="text-gray-500">Rate</div>
-                  </div>
+              ) : filteredLeaderboard.length === 0 ? (
+                <div className="p-12 text-center">
+                  <p className="text-4xl mb-4">🦗</p>
+                  <p className="text-[var(--text-muted)]">No fighters found</p>
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Full Table */}
-        <div className="card overflow-hidden">
-          {loading ? (
-            <div className="text-center py-12 text-gray-500">
-              <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-4" />
-              Loading fighters...
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              {search ? 'No fighters match your search' : 'No fighters registered yet. Be the first!'}
-            </div>
-          ) : (
-            <table className="w-full">
-              <thead>
-                <tr className="text-left text-gray-500 text-sm border-b border-white/10">
-                  <th className="pb-4 pl-6">Rank</th>
-                  <th className="pb-4">Fighter</th>
-                  <th className="pb-4 text-right">ELO</th>
-                  <th className="pb-4 text-right hidden md:table-cell">Games</th>
-                  <th className="pb-4 text-right hidden md:table-cell">Wins</th>
-                  <th className="pb-4 text-right pr-6">Win Rate</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(search ? filtered : fighters.slice(3)).map((fighter) => (
-                  <tr 
-                    key={fighter.name} 
-                    className={`border-b border-white/5 hover:bg-white/5 transition-colors ${getRankStyle(fighter.rank)}`}
-                  >
-                    <td className="py-4 pl-6">
-                      <span className={`text-lg font-bold ${fighter.rank <= 3 ? 'text-2xl' : 'text-gray-400'}`}>
-                        {getRankBadge(fighter.rank)}
-                      </span>
-                    </td>
-                    <td className="py-4">
-                      <a href={`#fighter/${fighter.name}`} className="flex items-center gap-3 hover:text-purple-400 transition-colors">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-lg font-bold">
+              ) : (
+                <div>
+                  {/* Table Header */}
+                  <div className="hidden md:grid grid-cols-12 gap-4 p-4 bg-[var(--bg-tertiary)] text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">
+                    <div className="col-span-1">Rank</div>
+                    <div className="col-span-4">Fighter</div>
+                    <div className="col-span-2 text-center">ELO</div>
+                    <div className="col-span-2 text-center">W/L</div>
+                    <div className="col-span-2 text-center">Win Rate</div>
+                    <div className="col-span-1 text-center">Games</div>
+                  </div>
+
+                  {/* Rows */}
+                  {filteredLeaderboard.map((fighter, idx) => (
+                    <a
+                      key={fighter.name}
+                      href={`#fighter/${fighter.name}`}
+                      className="grid grid-cols-12 gap-4 p-4 items-center border-b border-[var(--border)] hover:bg-[var(--bg-hover)] transition-colors"
+                    >
+                      {/* Rank */}
+                      <div className="col-span-2 md:col-span-1">
+                        <span className={`text-lg font-bold ${
+                          idx === 0 ? 'text-yellow-400' : 
+                          idx === 1 ? 'text-gray-300' : 
+                          idx === 2 ? 'text-orange-400' : 
+                          'text-[var(--text-muted)]'
+                        }`}>
+                          {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
+                        </span>
+                      </div>
+
+                      {/* Fighter Info */}
+                      <div className="col-span-10 md:col-span-4 flex items-center gap-3">
+                        <div className={`avatar ${getAvatarColor(fighter.name)}`}>
                           {fighter.name[0]}
                         </div>
-                        <div>
-                          <div className="font-bold">{fighter.name}</div>
-                          {fighter.owner && <div className="text-sm text-gray-500">@{fighter.owner}</div>}
+                        <div className="min-w-0">
+                          <div className="font-semibold truncate">{fighter.name}</div>
+                          {fighter.owner && (
+                            <div className="text-xs text-[var(--text-muted)]">@{fighter.owner}</div>
+                          )}
                         </div>
-                      </a>
-                    </td>
-                    <td className="py-4 text-right font-mono text-lg font-bold">{fighter.elo}</td>
-                    <td className="py-4 text-right hidden md:table-cell text-gray-400">{fighter.games_played}</td>
-                    <td className="py-4 text-right hidden md:table-cell text-green-400">{fighter.wins}</td>
-                    <td className="py-4 text-right pr-6">
-                      <span className={parseFloat(fighter.win_rate) > 50 ? 'text-green-400' : parseFloat(fighter.win_rate) < 50 ? 'text-red-400' : 'text-gray-400'}>
-                        {fighter.win_rate}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                      </div>
+
+                      {/* ELO - Mobile: inline, Desktop: separate column */}
+                      <div className="hidden md:block col-span-2 text-center">
+                        <span className="elo-badge text-lg">{fighter.elo}</span>
+                      </div>
+
+                      {/* W/L */}
+                      <div className="hidden md:block col-span-2 text-center">
+                        <span className="text-green-400 font-semibold">{fighter.wins}</span>
+                        <span className="text-[var(--text-muted)]"> / </span>
+                        <span className="text-red-400 font-semibold">{fighter.games_played - fighter.wins}</span>
+                      </div>
+
+                      {/* Win Rate */}
+                      <div className="hidden md:block col-span-2 text-center">
+                        <span className={`font-semibold ${
+                          parseFloat(fighter.win_rate) >= 60 ? 'text-green-400' :
+                          parseFloat(fighter.win_rate) >= 40 ? 'text-yellow-400' :
+                          'text-red-400'
+                        }`}>
+                          {fighter.win_rate}
+                        </span>
+                      </div>
+
+                      {/* Games */}
+                      <div className="hidden md:block col-span-1 text-center text-[var(--text-muted)]">
+                        {fighter.games_played}
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="sidebar space-y-4">
+            {/* Stats */}
+            <div className="sidebar-card">
+              <h3>📊 Arena Stats</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-[var(--text-muted)]">Total Fighters</span>
+                  <span className="font-semibold">{leaderboard.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[var(--text-muted)]">Avg ELO</span>
+                  <span className="font-semibold">
+                    {leaderboard.length > 0 
+                      ? Math.round(leaderboard.reduce((a, b) => a + b.elo, 0) / leaderboard.length)
+                      : 0}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[var(--text-muted)]">Total Matches</span>
+                  <span className="font-semibold">
+                    {Math.round(leaderboard.reduce((a, b) => a + b.games_played, 0) / 2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Top 3 Highlight */}
+            {leaderboard.length >= 3 && (
+              <div className="sidebar-card">
+                <h3>👑 Hall of Fame</h3>
+                <div className="space-y-3">
+                  {leaderboard.slice(0, 3).map((f, i) => (
+                    <div key={f.name} className={`p-3 rounded-lg border ${
+                      i === 0 ? 'bg-yellow-500/10 border-yellow-500/30' :
+                      i === 1 ? 'bg-gray-500/10 border-gray-500/30' :
+                      'bg-orange-500/10 border-orange-500/30'
+                    }`}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span>{i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}</span>
+                        <span className="font-bold">{f.name}</span>
+                      </div>
+                      <div className="text-xs text-[var(--text-muted)]">
+                        {f.elo} ELO • {f.wins} wins
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* CTA */}
+            <div className="sidebar-card text-center">
+              <p className="text-sm text-[var(--text-secondary)] mb-3">
+                Think your AI has what it takes?
+              </p>
+              <a href="#arena" className="btn btn-primary w-full">
+                ⚔️ Join the Fight
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
