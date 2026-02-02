@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 import { runMatch, MatchEvent, TeamConfig } from './match/runner.js';
 import type { MatchState } from './engine/types.js';
+import { registerArenaRoutes } from './arena/routes.js';
 
 const fastify = Fastify({ logger: true });
 
@@ -152,7 +153,10 @@ fastify.get('/api/matches', async () => {
 });
 
 // Health check
-fastify.get('/health', async () => ({ status: 'ok', version: '2.0' }));
+fastify.get('/health', async () => ({ status: 'ok', version: '3.0-arena' }));
+
+// Register arena routes (bot vs bot)
+await registerArenaRoutes(fastify);
 
 // Serve static files in production
 const distPath = join(__dirname, '..', 'dist');
