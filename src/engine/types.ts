@@ -1,69 +1,71 @@
-// Core types for AI Fight Club
+// Pokemon-style types for AI Fight Club v2
 
-export type MoveType = 'ATTACK' | 'HEAVY_ATTACK' | 'DEFEND' | 'COUNTER' | 'HEAL' | 'SPECIAL';
+export type ElementType = 'fire' | 'water' | 'grass' | 'electric' | 'psychic' | 'fighting' | 'dark' | 'normal';
 
-export interface Fighter {
+export interface Attack {
+  name: string;
+  energyCost: number;
+  damage: number;
+  effect?: 'burn' | 'paralyze' | 'heal' | 'energyBoost' | 'shield';
+  effectValue?: number;
+  description: string;
+}
+
+export interface FighterCard {
   id: string;
   name: string;
-  personality: string;
-  hp: number;
+  type: ElementType;
   maxHp: number;
-  energy: number;
-  maxEnergy: number;
-  attack: number;
-  defense: number;
-  defenseModifier: number; // Temporary defense boost
-  specialName: string;
-  specialDescription: string;
+  hp: number;
+  attacks: Attack[];
+  weakness: ElementType;
+  retreatCost: number;
+  personality: string;
+  catchphrase: string;
 }
 
-export interface Move {
-  type: MoveType;
+export interface Player {
+  id: string;
   name: string;
-  description: string;
-  energyCost: number;
-  execute: (attacker: Fighter, defender: Fighter, defenderMove: MoveType) => MoveResult;
+  active: FighterCard | null;
+  bench: FighterCard[];
+  energy: number;
+  knockouts: number; // Track KOs for win condition
 }
 
-export interface MoveResult {
-  damage: number;
-  healing: number;
-  energyUsed: number;
-  blocked: boolean;
-  countered: boolean;
-  description: string;
+export interface TurnAction {
+  type: 'attack' | 'retreat' | 'pass';
+  attackIndex?: number;
+  benchIndex?: number;
 }
 
 export interface TurnResult {
   turn: number;
-  fighter1: {
+  player1: {
     name: string;
-    move: MoveType;
+    fighter: string;
+    action: TurnAction;
     thinking: string;
     trashTalk: string;
-    result: MoveResult;
-    hpBefore: number;
-    hpAfter: number;
-    energyBefore: number;
-    energyAfter: number;
+    damage: number;
+    effectTriggered?: string;
   };
-  fighter2: {
+  player2: {
     name: string;
-    move: MoveType;
+    fighter: string;
+    action: TurnAction;
     thinking: string;
     trashTalk: string;
-    result: MoveResult;
-    hpBefore: number;
-    hpAfter: number;
-    energyBefore: number;
-    energyAfter: number;
+    damage: number;
+    effectTriggered?: string;
   };
+  events: string[];
 }
 
 export interface MatchState {
   id: string;
-  fighter1: Fighter;
-  fighter2: Fighter;
+  player1: Player;
+  player2: Player;
   turns: TurnResult[];
   currentTurn: number;
   status: 'pending' | 'fighting' | 'finished';
@@ -72,19 +74,22 @@ export interface MatchState {
   finishedAt: Date | null;
 }
 
-export interface BotConfig {
-  name: string;
-  personality: string;
-  specialName: string;
-  specialDescription: string;
-  stats?: {
-    attack?: number;
-    defense?: number;
-  };
-}
-
 export interface LLMResponse {
   thinking: string;
   trashTalk: string;
-  move: MoveType;
+  action: TurnAction;
 }
+
+// Type advantage chart: attacker type -> defender weakness = +20 damage
+export const TYPE_CHART: Record<ElementType, ElementType> = {
+  fire: 'grass',      // Fire is strong against Grass
+  water: 'fire',      // Water is strong against Fire
+  grass: 'water',     // Grass is strong against Water
+  electric: 'water',  // Electric is strong against Water
+  psychic: 'fighting', // Psychic is strong against Fighting
+  fighting: 'dark',   // Fighting is strong against Dark
+  dark: 'psychic',    // Dark is strong against Psychic
+  normal: 'normal',   // Normal has no advantage
+};
+
+export const WEAKNESS_BONUS = 20;

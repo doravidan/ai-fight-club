@@ -1,7 +1,6 @@
-// LLM client for AI Fight Club
-// Supports OpenAI GPT-4o
+// LLM client for AI Fight Club v2
 
-import type { Fighter, TurnResult, MoveType } from '../engine/types.js';
+import type { Player, TurnResult, TurnAction } from '../engine/types.js';
 import { generateFighterPrompt, parseResponse } from './prompt.js';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -9,21 +8,22 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 export interface LLMDecision {
   thinking: string;
   trashTalk: string;
-  move: MoveType;
+  action: TurnAction;
   raw: string;
 }
 
 export async function getFighterDecision(
-  fighter: Fighter,
-  opponent: Fighter,
+  player: Player,
+  opponent: Player,
   turnHistory: TurnResult[],
-  turnNumber: number
+  turnNumber: number,
+  teamPersonality: string
 ): Promise<LLMDecision> {
-  const prompt = generateFighterPrompt(fighter, opponent, turnHistory, turnNumber);
+  const prompt = generateFighterPrompt(player, opponent, turnHistory, turnNumber, teamPersonality);
 
   if (!OPENAI_API_KEY) {
     console.error('Warning: OPENAI_API_KEY not set, using random moves');
-    return fallbackDecision(fighter.name);
+    return fallbackDecision(player);
   }
 
   try {
@@ -38,7 +38,7 @@ export async function getFighterDecision(
         messages: [
           {
             role: 'system',
-            content: 'You are a fighter in AI Fight Club. Follow the format exactly.',
+            content: 'You are a Pokemon-style battle coach in AI Fight Club. Make strategic decisions considering type advantages, energy costs, and team composition. Follow the format exactly.',
           },
           {
             role: 'user',
@@ -46,7 +46,7 @@ export async function getFighterDecision(
           },
         ],
         max_tokens: 300,
-        temperature: 0.9,
+        temperature: 0.8,
       }),
     });
 
@@ -63,19 +63,19 @@ export async function getFighterDecision(
       raw: text,
     };
   } catch (error) {
-    console.error(`Error getting decision for ${fighter.name}:`, error);
-    return fallbackDecision(fighter.name);
+    console.error(`Error getting decision for ${player.name}:`, error);
+    return fallbackDecision(player);
   }
 }
 
-function fallbackDecision(name: string): LLMDecision {
-  const moves: MoveType[] = ['ATTACK', 'DEFEND', 'HEAVY_ATTACK'];
-  const randomMove = moves[Math.floor(Math.random() * moves.length)];
+function fallbackDecision(player: Player): LLMDecision {
+  // Default to first attack if enough energy, otherwise pass
+  const attackIndex = player.energy >= (player.active?.attacks[0]?.energyCost || 1) ? 0 : 0;
   
   return {
     thinking: 'System error - falling back to instinct!',
     trashTalk: '...',
-    move: randomMove,
+    action: { type: 'attack', attackIndex },
     raw: 'ERROR',
   };
 }

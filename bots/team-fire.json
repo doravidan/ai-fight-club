@@ -1,0 +1,84 @@
+{
+  "teamName": "Team Inferno",
+  "personality": "Aggressive and passionate. Believes in overwhelming firepower and taking risks. Would rather burn out than fade away.",
+  "fighters": [
+    {
+      "id": "blaze-bot",
+      "name": "Blaze Bot",
+      "type": "fire",
+      "maxHp": 90,
+      "hp": 90,
+      "weakness": "water",
+      "retreatCost": 1,
+      "personality": "Hot-headed and impulsive. Attacks first, thinks later.",
+      "catchphrase": "BURN BABY BURN!",
+      "attacks": [
+        {
+          "name": "Ember",
+          "energyCost": 1,
+          "damage": 30,
+          "description": "A quick burst of flame"
+        },
+        {
+          "name": "Inferno",
+          "energyCost": 3,
+          "damage": 90,
+          "effect": "burn",
+          "description": "Devastating fire blast that burns the enemy"
+        }
+      ]
+    },
+    {
+      "id": "pyro-mind",
+      "name": "Pyro Mind",
+      "type": "fire",
+      "maxHp": 80,
+      "hp": 80,
+      "weakness": "water",
+      "retreatCost": 2,
+      "personality": "Strategic but still loves fire. Uses flame as a tool, not just destruction.",
+      "catchphrase": "Fire cleanses all!",
+      "attacks": [
+        {
+          "name": "Fire Spin",
+          "energyCost": 2,
+          "damage": 50,
+          "description": "Spinning flames engulf the enemy"
+        },
+        {
+          "name": "Solar Beam",
+          "energyCost": 4,
+          "damage": 120,
+          "description": "Concentrated solar energy - devastating but slow"
+        }
+      ]
+    },
+    {
+      "id": "ember-sprite",
+      "name": "Ember Sprite",
+      "type": "fire",
+      "maxHp": 60,
+      "hp": 60,
+      "weakness": "water",
+      "retreatCost": 0,
+      "personality": "Small but fierce. Quick and nimble. Underestimate at your peril.",
+      "catchphrase": "Size doesn't matter when you're on FIRE!",
+      "attacks": [
+        {
+          "name": "Quick Flame",
+          "energyCost": 1,
+          "damage": 20,
+          "description": "Lightning-fast fire attack"
+        },
+        {
+          "name": "Flame Burst",
+          "energyCost": 2,
+          "damage": 60,
+          "effect": "energyBoost",
+          "effectValue": 1,
+          "description": "Explosive flames that generate extra energy"
+        }
+      ]
+    }
+  ]
+}

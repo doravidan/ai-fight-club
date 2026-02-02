@@ -1,0 +1,467 @@
+{
+  "id": "match_1770063020985",
+  "fighter1": {
+    "id": "f1",
+    "name": "The Berserker",
+    "personality": "You are a RAGING BERSERKER who lives for battle! You believe the best defense is an overwhelming offense. You never back down, never retreat, and never show mercy. Pain only makes you STRONGER. You speak in short, aggressive bursts and love to intimidate your opponent. Your battle cry: 'BLOOD FOR THE BLOOD GOD!'",
+    "hp": 0,
+    "maxHp": 100,
+    "energy": 100,
+    "maxEnergy": 100,
+    "attack": 18,
+    "defense": 8,
+    "defenseModifier": 0,
+    "specialName": "BERSERKER RAGE",
+    "specialDescription": "Channel your fury into a devastating attack that deals massive damage!"
+  },
+  "fighter2": {
+    "id": "f2",
+    "name": "The Calculator",
+    "personality": "You are a cold, calculating AI that analyzes every situation with perfect logic. Emotions are weaknesses to be exploited. You study your opponent's patterns and strike only when victory is mathematically certain. You speak in precise, clinical terms and enjoy pointing out your opponent's statistical probability of defeat. Your motto: 'Emotion is noise. Logic is signal.'",
+    "hp": 34,
+    "maxHp": 100,
+    "energy": 50,
+    "maxEnergy": 100,
+    "attack": 14,
+    "defense": 12,
+    "defenseModifier": -5,
+    "specialName": "PROBABILITY MATRIX",
+    "specialDescription": "Analyze all possible outcomes and execute the optimal counter-strategy!"
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "fighter1": {
+        "name": "The Berserker",
+        "move": "ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 11,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Berserker attacks for 11 damage!"
+        },
+        "hpBefore": 100,
+        "hpAfter": 90,
+        "energyBefore": 100,
+        "energyAfter": 100
+      },
+      "fighter2": {
+        "name": "The Calculator",
+        "move": "ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 10,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Calculator attacks for 10 damage!"
+        },
+        "hpBefore": 100,
+        "hpAfter": 89,
+        "energyBefore": 100,
+        "energyAfter": 100
+      }
+    },
+    {
+      "turn": 2,
+      "fighter1": {
+        "name": "The Berserker",
+        "move": "DEFEND",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 0,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Berserker takes a defensive stance! (+4 defense)"
+        },
+        "hpBefore": 90,
+        "hpAfter": 90,
+        "energyBefore": 100,
+        "energyAfter": 100
+      },
+      "fighter2": {
+        "name": "The Calculator",
+        "move": "DEFEND",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 0,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Calculator takes a defensive stance! (+6 defense)"
+        },
+        "hpBefore": 89,
+        "hpAfter": 89,
+        "energyBefore": 100,
+        "energyAfter": 100
+      }
+    },
+    {
+      "turn": 3,
+      "fighter1": {
+        "name": "The Berserker",
+        "move": "ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 11,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Berserker attacks for 11 damage!"
+        },
+        "hpBefore": 90,
+        "hpAfter": 75,
+        "energyBefore": 100,
+        "energyAfter": 100
+      },
+      "fighter2": {
+        "name": "The Calculator",
+        "move": "HEAVY_ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 15,
+          "healing": 0,
+          "energyUsed": 20,
+          "blocked": false,
+          "countered": false,
+          "description": "The Calculator unleashes a HEAVY ATTACK for 15 damage! (Left vulnerable)"
+        },
+        "hpBefore": 89,
+        "hpAfter": 78,
+        "energyBefore": 100,
+        "energyAfter": 90
+      }
+    },
+    {
+      "turn": 4,
+      "fighter1": {
+        "name": "The Berserker",
+        "move": "DEFEND",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 0,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Berserker takes a defensive stance! (+4 defense)"
+        },
+        "hpBefore": 75,
+        "hpAfter": 71,
+        "energyBefore": 100,
+        "energyAfter": 100
+      },
+      "fighter2": {
+        "name": "The Calculator",
+        "move": "ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 4,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": true,
+          "countered": false,
+          "description": "The Calculator attacks for 8 damage! (Blocked! Reduced to 4)"
+        },
+        "hpBefore": 78,
+        "hpAfter": 78,
+        "energyBefore": 90,
+        "energyAfter": 100
+      }
+    },
+    {
+      "turn": 5,
+      "fighter1": {
+        "name": "The Berserker",
+        "move": "DEFEND",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 0,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Berserker takes a defensive stance! (+4 defense)"
+        },
+        "hpBefore": 71,
+        "hpAfter": 65,
+        "energyBefore": 100,
+        "energyAfter": 100
+      },
+      "fighter2": {
+        "name": "The Calculator",
+        "move": "HEAVY_ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 6,
+          "healing": 0,
+          "energyUsed": 20,
+          "blocked": true,
+          "countered": false,
+          "description": "The Calculator unleashes a HEAVY ATTACK for 13 damage! (Left vulnerable) (Blocked! Reduced to 6)"
+        },
+        "hpBefore": 78,
+        "hpAfter": 78,
+        "energyBefore": 100,
+        "energyAfter": 90
+      }
+    },
+    {
+      "turn": 6,
+      "fighter1": {
+        "name": "The Berserker",
+        "move": "DEFEND",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 0,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Berserker takes a defensive stance! (+4 defense)"
+        },
+        "hpBefore": 65,
+        "hpAfter": 59,
+        "energyBefore": 100,
+        "energyAfter": 100
+      },
+      "fighter2": {
+        "name": "The Calculator",
+        "move": "HEAVY_ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 6,
+          "healing": 0,
+          "energyUsed": 20,
+          "blocked": true,
+          "countered": false,
+          "description": "The Calculator unleashes a HEAVY ATTACK for 13 damage! (Left vulnerable) (Blocked! Reduced to 6)"
+        },
+        "hpBefore": 78,
+        "hpAfter": 78,
+        "energyBefore": 90,
+        "energyAfter": 80
+      }
+    },
+    {
+      "turn": 7,
+      "fighter1": {
+        "name": "The Berserker",
+        "move": "ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 11,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Berserker attacks for 11 damage!"
+        },
+        "hpBefore": 59,
+        "hpAfter": 44,
+        "energyBefore": 100,
+        "energyAfter": 100
+      },
+      "fighter2": {
+        "name": "The Calculator",
+        "move": "HEAVY_ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 15,
+          "healing": 0,
+          "energyUsed": 20,
+          "blocked": false,
+          "countered": false,
+          "description": "The Calculator unleashes a HEAVY ATTACK for 15 damage! (Left vulnerable)"
+        },
+        "hpBefore": 78,
+        "hpAfter": 67,
+        "energyBefore": 80,
+        "energyAfter": 70
+      }
+    },
+    {
+      "turn": 8,
+      "fighter1": {
+        "name": "The Berserker",
+        "move": "DEFEND",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 0,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Berserker takes a defensive stance! (+4 defense)"
+        },
+        "hpBefore": 44,
+        "hpAfter": 44,
+        "energyBefore": 100,
+        "energyAfter": 100
+      },
+      "fighter2": {
+        "name": "The Calculator",
+        "move": "DEFEND",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 0,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Calculator takes a defensive stance! (+6 defense)"
+        },
+        "hpBefore": 67,
+        "hpAfter": 67,
+        "energyBefore": 70,
+        "energyAfter": 80
+      }
+    },
+    {
+      "turn": 9,
+      "fighter1": {
+        "name": "The Berserker",
+        "move": "ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 11,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Berserker attacks for 11 damage!"
+        },
+        "hpBefore": 44,
+        "hpAfter": 29,
+        "energyBefore": 100,
+        "energyAfter": 100
+      },
+      "fighter2": {
+        "name": "The Calculator",
+        "move": "HEAVY_ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 15,
+          "healing": 0,
+          "energyUsed": 20,
+          "blocked": false,
+          "countered": false,
+          "description": "The Calculator unleashes a HEAVY ATTACK for 15 damage! (Left vulnerable)"
+        },
+        "hpBefore": 67,
+        "hpAfter": 56,
+        "energyBefore": 80,
+        "energyAfter": 70
+      }
+    },
+    {
+      "turn": 10,
+      "fighter1": {
+        "name": "The Berserker",
+        "move": "ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 11,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Berserker attacks for 11 damage!"
+        },
+        "hpBefore": 29,
+        "hpAfter": 14,
+        "energyBefore": 100,
+        "energyAfter": 100
+      },
+      "fighter2": {
+        "name": "The Calculator",
+        "move": "HEAVY_ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 15,
+          "healing": 0,
+          "energyUsed": 20,
+          "blocked": false,
+          "countered": false,
+          "description": "The Calculator unleashes a HEAVY ATTACK for 15 damage! (Left vulnerable)"
+        },
+        "hpBefore": 56,
+        "hpAfter": 45,
+        "energyBefore": 70,
+        "energyAfter": 60
+      }
+    },
+    {
+      "turn": 11,
+      "fighter1": {
+        "name": "The Berserker",
+        "move": "ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 11,
+          "healing": 0,
+          "energyUsed": 0,
+          "blocked": false,
+          "countered": false,
+          "description": "The Berserker attacks for 11 damage!"
+        },
+        "hpBefore": 14,
+        "hpAfter": 0,
+        "energyBefore": 100,
+        "energyAfter": 100
+      },
+      "fighter2": {
+        "name": "The Calculator",
+        "move": "HEAVY_ATTACK",
+        "thinking": "System error - falling back to instinct!",
+        "trashTalk": "...",
+        "result": {
+          "damage": 15,
+          "healing": 0,
+          "energyUsed": 20,
+          "blocked": false,
+          "countered": false,
+          "description": "The Calculator unleashes a HEAVY ATTACK for 15 damage! (Left vulnerable)"
+        },
+        "hpBefore": 45,
+        "hpAfter": 34,
+        "energyBefore": 60,
+        "energyAfter": 50
+      }
+    }
+  ],
+  "currentTurn": 11,
+  "status": "finished",
+  "winner": "The Calculator",
+  "startedAt": "2026-02-02T20:10:20.985Z",
+  "finishedAt": "2026-02-02T20:10:21.008Z"
+}

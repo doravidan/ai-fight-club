@@ -1,10 +1,10 @@
-// Match runner - orchestrates a full fight
+// Pokemon-style match runner for AI Fight Club v2
 
-import { createFighter, processTurn, checkWinner } from '../engine/combat.js';
+import { processTurn, checkWinner } from '../engine/combat.js';
 import { getFighterDecision } from '../ai/llm.js';
-import type { BotConfig, MatchState, TurnResult } from '../engine/types.js';
+import type { FighterCard, Player, MatchState, TurnResult } from '../engine/types.js';
 
-const MAX_TURNS = 20;
+const MAX_TURNS = 30;
 
 export type MatchEventType = 'start' | 'turn' | 'end';
 
@@ -15,20 +15,38 @@ export interface MatchEvent {
 
 export type MatchEventCallback = (event: MatchEvent) => void;
 
+export interface TeamConfig {
+  teamName: string;
+  personality: string;
+  fighters: FighterCard[];
+}
+
+function createPlayer(id: string, team: TeamConfig): Player {
+  const fighters = team.fighters.map(f => ({ ...f, hp: f.maxHp }));
+  return {
+    id,
+    name: team.teamName,
+    active: fighters[0],
+    bench: fighters.slice(1),
+    energy: 0,
+    knockouts: 0,
+  };
+}
+
 export async function runMatch(
-  bot1Config: BotConfig,
-  bot2Config: BotConfig,
+  team1Config: TeamConfig,
+  team2Config: TeamConfig,
   onEvent?: MatchEventCallback
 ): Promise<MatchState> {
   const matchId = `match_${Date.now()}`;
   
-  const fighter1 = createFighter('f1', bot1Config);
-  const fighter2 = createFighter('f2', bot2Config);
+  const player1 = createPlayer('p1', team1Config);
+  const player2 = createPlayer('p2', team2Config);
 
   const matchState: MatchState = {
     id: matchId,
-    fighter1,
-    fighter2,
+    player1,
+    player2,
     turns: [],
     currentTurn: 0,
     status: 'pending',
@@ -42,36 +60,42 @@ export async function runMatch(
   onEvent?.({ type: 'start', data: { ...matchState } });
 
   console.log(`\n${'═'.repeat(60)}`);
-  console.log(`🥊 AI FIGHT CLUB - ${fighter1.name} vs ${fighter2.name}`);
+  console.log(`🎴 AI FIGHT CLUB v2 - ${player1.name} vs ${player2.name}`);
   console.log(`${'═'.repeat(60)}\n`);
 
   // Main fight loop
   for (let turn = 1; turn <= MAX_TURNS; turn++) {
     matchState.currentTurn = turn;
     
+    // Check if both have active fighters
+    if (!player1.active || !player2.active) {
+      break;
+    }
+    
     console.log(`\n--- TURN ${turn} ---`);
-    console.log(`${fighter1.name}: ${fighter1.hp} HP | ${fighter2.name}: ${fighter2.hp} HP\n`);
+    console.log(`${player1.name}: ${player1.active.name} (${player1.active.hp} HP) | Energy: ${player1.energy}`);
+    console.log(`${player2.name}: ${player2.active.name} (${player2.active.hp} HP) | Energy: ${player2.energy}\n`);
 
-    // Get decisions from both fighters (in parallel)
+    // Get decisions from both players (in parallel)
     const [decision1, decision2] = await Promise.all([
-      getFighterDecision(fighter1, fighter2, matchState.turns, turn),
-      getFighterDecision(fighter2, fighter1, matchState.turns, turn),
+      getFighterDecision(player1, player2, matchState.turns, turn, team1Config.personality),
+      getFighterDecision(player2, player1, matchState.turns, turn, team2Config.personality),
     ]);
 
-    console.log(`💭 ${fighter1.name} thinks: "${decision1.thinking}"`);
-    console.log(`🗣️ ${fighter1.name}: "${decision1.trashTalk}"`);
-    console.log(`⚔️ ${fighter1.name} chooses: ${decision1.move}\n`);
+    console.log(`💭 ${player1.name} thinks: "${decision1.thinking}"`);
+    console.log(`🗣️ ${player1.active.name}: "${decision1.trashTalk}"`);
+    console.log(`⚔️ Action: ${JSON.stringify(decision1.action)}\n`);
 
-    console.log(`💭 ${fighter2.name} thinks: "${decision2.thinking}"`);
-    console.log(`🗣️ ${fighter2.name}: "${decision2.trashTalk}"`);
-    console.log(`⚔️ ${fighter2.name} chooses: ${decision2.move}\n`);
+    console.log(`💭 ${player2.name} thinks: "${decision2.thinking}"`);
+    console.log(`🗣️ ${player2.active.name}: "${decision2.trashTalk}"`);
+    console.log(`⚔️ Action: ${JSON.stringify(decision2.action)}\n`);
 
     // Process the turn
-    const turnResult = processTurn(
-      fighter1,
-      fighter2,
-      decision1.move,
-      decision2.move,
+    const { result: turnResult, p1KO, p2KO } = processTurn(
+      player1,
+      player2,
+      decision1.action,
+      decision2.action,
       decision1.thinking,
       decision2.thinking,
       decision1.trashTalk,
@@ -81,16 +105,14 @@ export async function runMatch(
 
     matchState.turns.push(turnResult);
 
-    console.log(`📊 Results:`);
-    console.log(`   ${turnResult.fighter1.result.description}`);
-    console.log(`   ${turnResult.fighter2.result.description}`);
-    console.log(`   ${fighter1.name}: ${fighter1.hp} HP | ${fighter2.name}: ${fighter2.hp} HP`);
+    console.log(`📊 Events:`);
+    turnResult.events.forEach(e => console.log(`   ${e}`));
 
     // Emit turn event
     onEvent?.({ type: 'turn', data: turnResult });
 
     // Check for winner
-    const winner = checkWinner(fighter1, fighter2);
+    const winner = checkWinner(player1, player2);
     if (winner) {
       matchState.status = 'finished';
       matchState.winner = winner;
@@ -101,6 +123,7 @@ export async function runMatch(
         console.log(`🤝 IT'S A DRAW!`);
       } else {
         console.log(`🏆 WINNER: ${winner}!`);
+        console.log(`Final Score - ${player1.name}: ${player1.knockouts} KOs | ${player2.name}: ${player2.knockouts} KOs`);
       }
       console.log(`${'═'.repeat(60)}\n`);
 
@@ -109,20 +132,20 @@ export async function runMatch(
     }
   }
 
-  // Max turns reached - winner by HP
+  // Max turns reached
   matchState.status = 'finished';
   matchState.finishedAt = new Date();
   
-  if (fighter1.hp > fighter2.hp) {
-    matchState.winner = fighter1.name;
-  } else if (fighter2.hp > fighter1.hp) {
-    matchState.winner = fighter2.name;
+  if (player1.knockouts > player2.knockouts) {
+    matchState.winner = player1.name;
+  } else if (player2.knockouts > player1.knockouts) {
+    matchState.winner = player2.name;
   } else {
     matchState.winner = 'DRAW';
   }
 
   console.log(`\n${'═'.repeat(60)}`);
-  console.log(`⏰ TIME'S UP! Winner by HP: ${matchState.winner}`);
+  console.log(`⏰ TIME'S UP! Winner by KOs: ${matchState.winner}`);
   console.log(`${'═'.repeat(60)}\n`);
 
   onEvent?.({ type: 'end', data: { ...matchState } });

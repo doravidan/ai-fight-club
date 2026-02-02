@@ -1,0 +1,347 @@
+{
+  "id": "match_1770064014493",
+  "player1": {
+    "id": "p1",
+    "name": "Team Inferno",
+    "active": null,
+    "bench": [],
+    "energy": 1,
+    "knockouts": 0
+  },
+  "player2": {
+    "id": "p2",
+    "name": "Team Tsunami",
+    "active": {
+      "id": "aqua-mind",
+      "name": "Aqua Mind",
+      "type": "water",
+      "maxHp": 100,
+      "hp": 50,
+      "weakness": "electric",
+      "retreatCost": 2,
+      "personality": "Calm and calculating. Never rushes, always plans three moves ahead.",
+      "catchphrase": "Flow like water, strike like a tsunami.",
+      "attacks": [
+        {
+          "name": "Splash",
+          "energyCost": 1,
+          "damage": 20,
+          "description": "A simple but effective water attack"
+        },
+        {
+          "name": "Tsunami",
+          "energyCost": 3,
+          "damage": 70,
+          "effect": "heal",
+          "effectValue": 20,
+          "description": "Massive wave that also heals the user"
+        }
+      ]
+    },
+    "bench": [
+      {
+        "id": "frost-guardian",
+        "name": "Frost Guardian",
+        "type": "water",
+        "maxHp": 120,
+        "hp": 120,
+        "weakness": "electric",
+        "retreatCost": 3,
+        "personality": "The tank. Slow but incredibly durable. Protects the team.",
+        "catchphrase": "You shall not pass!",
+        "attacks": [
+          {
+            "name": "Ice Shield",
+            "energyCost": 2,
+            "damage": 30,
+            "effect": "shield",
+            "description": "Defensive ice barrier that reduces next damage"
+          },
+          {
+            "name": "Blizzard",
+            "energyCost": 4,
+            "damage": 100,
+            "effect": "paralyze",
+            "description": "Freezing storm that may paralyze"
+          }
+        ]
+      },
+      {
+        "id": "tide-dancer",
+        "name": "Tide Dancer",
+        "type": "water",
+        "maxHp": 70,
+        "hp": 70,
+        "weakness": "electric",
+        "retreatCost": 1,
+        "personality": "Graceful and evasive. Dances around attacks while striking back.",
+        "catchphrase": "Can't hit what you can't catch!",
+        "attacks": [
+          {
+            "name": "Water Pulse",
+            "energyCost": 1,
+            "damage": 30,
+            "description": "Rhythmic water attack"
+          },
+          {
+            "name": "Aqua Jet",
+            "energyCost": 2,
+            "damage": 50,
+            "description": "High-speed water strike"
+          }
+        ]
+      }
+    ],
+    "energy": 1,
+    "knockouts": 3
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "player1": {
+        "name": "Team Inferno",
+        "fighter": "Pyro Mind",
+        "action": {
+          "type": "retreat",
+          "benchIndex": 0
+        },
+        "thinking": "Blaze Bot is weak to Aqua Mind's water attacks, which means we need to retreat to avoid extra damage. Pyro Mind can take the heat and deal with Aqua Mind's water type effectively.",
+        "trashTalk": "\"You think you can drown the fire? I'm just getting warmed up, and it's about to get blazing hot in here!\"",
+        "damage": 0
+      },
+      "player2": {
+        "name": "Team Tsunami",
+        "fighter": "Aqua Mind",
+        "action": {
+          "type": "pass"
+        },
+        "thinking": "We are currently at a disadvantage with no energy, but the Blaze Bot is weak to our water type attacks. Although we can't attack this turn, we should focus on building energy for a powerful Tsunami next turn while preparing to switch if needed.",
+        "trashTalk": "\"You think you can burn me down? Watch as I rise like the tide, and your flames fizzle out!\"",
+        "damage": 0
+      },
+      "events": [
+        "⚡ Both players gain 1 energy",
+        "Team Inferno retreats Blaze Bot and sends out Pyro Mind!"
+      ]
+    },
+    {
+      "turn": 2,
+      "player1": {
+        "name": "Team Inferno",
+        "fighter": "Pyro Mind",
+        "action": {
+          "type": "retreat",
+          "benchIndex": 0
+        },
+        "thinking": "Given that Pyro Mind is weak to Aqua Mind's water type attacks, it's crucial to make a strategic retreat and bring in a fresh fighter. Ember Sprite has lower HP but could create an opening for a future attack, while Blaze Bot has higher HP and could withstand more damage. Choosing Blaze Bot will give us a sturdy front line, and since Aqua Mind is weak to electric attacks, we can play for the future if we can build energy.",
+        "trashTalk": "\"You're all wet, Aqua Mind! Let’s see if you can handle the heat when the true firepower of Team Inferno steps up!\"",
+        "damage": 0
+      },
+      "player2": {
+        "name": "Team Tsunami",
+        "fighter": "Aqua Mind",
+        "action": {
+          "type": "attack",
+          "attackIndex": 0
+        },
+        "thinking": "With Aqua Mind's water type advantage against Pyro Mind's fire type, using Splash will deal 40 damage, putting Pyro Mind at a significant disadvantage. I will maximize damage while conserving energy for future turns.",
+        "trashTalk": "\"You think fire can outlast the tide? Prepare to be washed away, Pyro Mind!\"",
+        "damage": 40
+      },
+      "events": [
+        "⚡ Both players gain 1 energy",
+        "Aqua Mind uses Splash! It's SUPER EFFECTIVE! 40 damage!"
+      ]
+    },
+    {
+      "turn": 3,
+      "player1": {
+        "name": "Team Inferno",
+        "fighter": "Blaze Bot",
+        "action": {
+          "type": "retreat",
+          "benchIndex": 0
+        },
+        "thinking": "Our Pyro Mind is vulnerable to Aqua Mind's water attacks, and with only 1 energy, we can't hit back effectively. It's time to retreat to Blaze Bot, who has a full health advantage and can bring the heat with electric-type attacks in the future.",
+        "trashTalk": "\"You think you can drown the flames of passion? Please, Aqua Mind, when I unleash Blaze Bot, it'll be a tidal wave of regret!\"",
+        "damage": 0
+      },
+      "player2": {
+        "name": "Team Tsunami",
+        "fighter": "Aqua Mind",
+        "action": {
+          "type": "attack",
+          "attackIndex": 0
+        },
+        "thinking": "With Pyro Mind weakened and vulnerable to my water type attack, I can finish it off with my available attack. I should utilize my energy efficiently to secure the KO while maintaining Aqua Mind’s strong position.",
+        "trashTalk": "\"You’re nothing but a flickering flame, Pyro Mind! Prepare to be washed away by the tide of my skill!\"",
+        "damage": 40
+      },
+      "events": [
+        "⚡ Both players gain 1 energy",
+        "Team Inferno retreats Pyro Mind and sends out Blaze Bot!",
+        "Aqua Mind uses Splash! It's SUPER EFFECTIVE! 40 damage!"
+      ]
+    },
+    {
+      "turn": 4,
+      "player1": {
+        "name": "Team Inferno",
+        "fighter": "Blaze Bot",
+        "action": {
+          "type": "retreat",
+          "benchIndex": 0
+        },
+        "thinking": "Blaze Bot is in a dangerous position against Aqua Mind due to its water type advantage. With no energy to attack, I should retreat to a bench fighter to avoid unnecessary damage and regroup. Pyro Mind has decent HP and can take a hit, allowing us to strategize for a strong counterattack in the next turn.",
+        "trashTalk": "\"You think you can drown the flames? You’re about to get scorched, Aqua Mind! Prepare for a fiery comeback!\"",
+        "damage": 0
+      },
+      "player2": {
+        "name": "Team Tsunami",
+        "fighter": "Aqua Mind",
+        "action": {
+          "type": "attack",
+          "attackIndex": 0
+        },
+        "thinking": "With Blaze Bot's fire type being weak to my water type, I can deliver a decisive blow. Since I have enough energy for a Splash attack, I should use it to maximize damage while keeping my Aqua Mind in play for future rounds.",
+        "trashTalk": "\"You’re feeling the tide, Blaze Bot! Just wait until the waves crash over you!\"",
+        "damage": 40
+      },
+      "events": [
+        "⚡ Both players gain 1 energy",
+        "Team Inferno retreats Blaze Bot and sends out Pyro Mind!",
+        "Aqua Mind uses Splash! It's SUPER EFFECTIVE! 40 damage!",
+        "💀 Pyro Mind is KNOCKED OUT!",
+        "Team Inferno sends out Blaze Bot!"
+      ]
+    },
+    {
+      "turn": 5,
+      "player1": {
+        "name": "Team Inferno",
+        "fighter": "Ember Sprite",
+        "action": {
+          "type": "retreat",
+          "benchIndex": 0
+        },
+        "thinking": "With Blaze Bot's current vulnerability to Aqua Mind's water attacks, the best option is to retreat to Ember Sprite, who can take a hit and potentially bring more firepower back into the battle next turn. We'll need to conserve energy for a stronger attack while minimizing damage taken.",
+        "trashTalk": "\"You call that a water attack? I've seen more fire in a kiddie pool! Get ready to feel the heat, Aqua Mind!\"",
+        "damage": 0
+      },
+      "player2": {
+        "name": "Team Tsunami",
+        "fighter": "Aqua Mind",
+        "action": {
+          "type": "attack",
+          "attackIndex": 0
+        },
+        "thinking": "Aqua Mind has the advantage with its water type against Blaze Bot, which is weak to water attacks. Given the current energy constraints, using Splash will allow us to finish off Blaze Bot while conserving our options for the next turn.",
+        "trashTalk": "\"You thought fire could extinguish the tide? Prepare to be swept away by the force of the ocean!\"",
+        "damage": 40
+      },
+      "events": [
+        "⚡ Both players gain 1 energy",
+        "Team Inferno retreats Blaze Bot and sends out Ember Sprite!",
+        "Aqua Mind uses Splash! It's SUPER EFFECTIVE! 40 damage!"
+      ]
+    },
+    {
+      "turn": 6,
+      "player1": {
+        "name": "Team Inferno",
+        "fighter": "Blaze Bot",
+        "action": {
+          "type": "retreat",
+          "benchIndex": 0
+        },
+        "thinking": "We're in a tough spot with Ember Sprite being weak to Aqua Mind's water attacks. With no energy to counterattack, the best move is to retreat to Blaze Bot, who has more HP and can take the hits while providing a stronger offensive presence next turn.",
+        "trashTalk": "\"You think you can drown the flames? Let’s see how long you can hold your breath, Aqua Mind!\"",
+        "damage": 0
+      },
+      "player2": {
+        "name": "Team Tsunami",
+        "fighter": "Aqua Mind",
+        "action": {
+          "type": "attack",
+          "attackIndex": 0
+        },
+        "thinking": "Aqua Mind has a significant type advantage over Ember Sprite, who is already weakened. With 1 energy available, I can launch a Splash attack to secure a KO, keeping our momentum strong without any risk of retaliation.",
+        "trashTalk": "\"You call that a flame? Your fire is nothing against the tides I bring! Prepare to be washed away!\"",
+        "damage": 40
+      },
+      "events": [
+        "⚡ Both players gain 1 energy",
+        "Team Inferno retreats Ember Sprite and sends out Blaze Bot!",
+        "Aqua Mind uses Splash! It's SUPER EFFECTIVE! 40 damage!"
+      ]
+    },
+    {
+      "turn": 7,
+      "player1": {
+        "name": "Team Inferno",
+        "fighter": "Ember Sprite",
+        "action": {
+          "type": "attack",
+          "attackIndex": 0
+        },
+        "thinking": "With Blaze Bot's HP dangerously low and Aqua Mind's water type taking advantage of that, I need to act aggressively while I still can. I will use Ember to deal 30 damage and hopefully put some pressure on Aqua Mind before retreating to conserve my remaining fighter for a stronger comeback.",
+        "trashTalk": "\"You think you can drown the flames of passion? Blaze Bot's burning spirit won't go out that easily! Get ready to feel the heat!\"",
+        "damage": 30
+      },
+      "player2": {
+        "name": "Team Tsunami",
+        "fighter": "Aqua Mind",
+        "action": {
+          "type": "attack",
+          "attackIndex": 0
+        },
+        "thinking": "With Blaze Bot at 10 HP and weak to my water type, I can finish it off with my Splash attack, taking advantage of its vulnerability. I’ll conserve my energy for healing later, as I don’t need to retreat right now.",
+        "trashTalk": "\"You thought you could blaze your way to victory? Prepare to be extinguished by the tide!\"",
+        "damage": 40
+      },
+      "events": [
+        "⚡ Both players gain 1 energy",
+        "Blaze Bot uses Ember! 30 damage!",
+        "Aqua Mind uses Splash! It's SUPER EFFECTIVE! 40 damage!",
+        "💀 Blaze Bot is KNOCKED OUT!",
+        "Team Inferno sends out Ember Sprite!"
+      ]
+    },
+    {
+      "turn": 8,
+      "player1": {
+        "name": "Team Inferno",
+        "fighter": "None",
+        "action": {
+          "type": "attack",
+          "attackIndex": 0
+        },
+        "thinking": "We’re on the brink here, and every second counts! Ember Sprite must go all out with Quick Flame to chip away at Aqua Mind’s health while we still can, despite the risk of taking another hit from water.",
+        "trashTalk": "“You think you can drown the fire? Bring it on, Aqua Mind! I’ll turn your waves into steam!”",
+        "damage": 20
+      },
+      "player2": {
+        "name": "Team Tsunami",
+        "fighter": "Aqua Mind",
+        "action": {
+          "type": "attack",
+          "attackIndex": 0
+        },
+        "thinking": "With Aqua Mind having a type advantage over the weakened Ember Sprite, using Splash will secure the knockout, bringing us closer to victory while conserving energy for potential future turns.",
+        "trashTalk": "\"You thought fire could stand against the tide? Allow me to wash away your flames!\"",
+        "damage": 40
+      },
+      "events": [
+        "⚡ Both players gain 1 energy",
+        "Ember Sprite uses Quick Flame! 20 damage!",
+        "Aqua Mind uses Splash! It's SUPER EFFECTIVE! 40 damage!",
+        "💀 Ember Sprite is KNOCKED OUT!"
+      ]
+    }
+  ],
+  "currentTurn": 8,
+  "status": "finished",
+  "winner": "Team Tsunami",
+  "startedAt": "2026-02-02T20:26:54.493Z",
+  "finishedAt": "2026-02-02T20:27:15.587Z"
+}

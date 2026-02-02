@@ -1,41 +1,48 @@
 #!/usr/bin/env tsx
-// CLI to run AI Fight Club matches
+// CLI to run AI Fight Club v2 matches (Pokemon style)
 
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { runMatch } from './match/runner.js';
-import type { BotConfig, MatchState } from './engine/types.js';
+import { runMatch, TeamConfig } from './match/runner.js';
+import type { MatchState } from './engine/types.js';
 
 async function main() {
   const args = process.argv.slice(2);
   
-  // Default bots
-  let bot1Path = './bots/berserker.json';
-  let bot2Path = './bots/calculator.json';
+  // Default teams
+  let team1Path = './bots/team-fire.json';
+  let team2Path = './bots/team-water.json';
 
   if (args.length >= 2) {
-    bot1Path = args[0];
-    bot2Path = args[1];
+    team1Path = args[0];
+    team2Path = args[1];
   }
 
-  console.log('🥊 AI FIGHT CLUB - Loading fighters...\n');
+  console.log('🎴 AI FIGHT CLUB v2 - Pokemon Style!\n');
+  console.log('Loading teams...\n');
 
-  // Load bot configs
-  const bot1: BotConfig = JSON.parse(readFileSync(bot1Path, 'utf-8'));
-  const bot2: BotConfig = JSON.parse(readFileSync(bot2Path, 'utf-8'));
+  // Load team configs
+  const team1: TeamConfig = JSON.parse(readFileSync(team1Path, 'utf-8'));
+  const team2: TeamConfig = JSON.parse(readFileSync(team2Path, 'utf-8'));
 
-  console.log(`Fighter 1: ${bot1.name}`);
-  console.log(`  Personality: ${bot1.personality.slice(0, 80)}...`);
-  console.log(`  Special: ${bot1.specialName}\n`);
+  console.log(`🔥 ${team1.teamName}`);
+  console.log(`   Personality: ${team1.personality.slice(0, 60)}...`);
+  console.log(`   Fighters:`);
+  team1.fighters.forEach(f => {
+    console.log(`   - ${f.name} (${f.type}) HP:${f.maxHp}`);
+  });
 
-  console.log(`Fighter 2: ${bot2.name}`);
-  console.log(`  Personality: ${bot2.personality.slice(0, 80)}...`);
-  console.log(`  Special: ${bot2.specialName}\n`);
+  console.log(`\n💧 ${team2.teamName}`);
+  console.log(`   Personality: ${team2.personality.slice(0, 60)}...`);
+  console.log(`   Fighters:`);
+  team2.fighters.forEach(f => {
+    console.log(`   - ${f.name} (${f.type}) HP:${f.maxHp}`);
+  });
 
-  console.log('Starting match in 3 seconds...\n');
+  console.log('\nStarting match in 3 seconds...\n');
   await sleep(3000);
 
   // Run the match
-  const result = await runMatch(bot1, bot2);
+  const result = await runMatch(team1, team2);
 
   // Save match result
   mkdirSync('./matches', { recursive: true });
@@ -53,24 +60,13 @@ function printSummary(match: MatchState) {
   console.log('═'.repeat(60));
   console.log(`Duration: ${match.turns.length} turns`);
   console.log(`Winner: ${match.winner}`);
-  console.log(`\n${match.fighter1.name}:`);
-  console.log(`  Final HP: ${match.fighter1.hp}`);
-  console.log(`  Moves used: ${countMoves(match, match.fighter1.name)}`);
-  console.log(`\n${match.fighter2.name}:`);
-  console.log(`  Final HP: ${match.fighter2.hp}`);
-  console.log(`  Moves used: ${countMoves(match, match.fighter2.name)}`);
+  console.log(`\n${match.player1.name}:`);
+  console.log(`  Knockouts: ${match.player1.knockouts}`);
+  console.log(`  Remaining: ${match.player1.active ? match.player1.active.name : 'None'} + ${match.player1.bench.length} on bench`);
+  console.log(`\n${match.player2.name}:`);
+  console.log(`  Knockouts: ${match.player2.knockouts}`);
+  console.log(`  Remaining: ${match.player2.active ? match.player2.active.name : 'None'} + ${match.player2.bench.length} on bench`);
   console.log('═'.repeat(60));
-}
-
-function countMoves(match: MatchState, fighterName: string): string {
-  const moves: Record<string, number> = {};
-  for (const turn of match.turns) {
-    const fighter = turn.fighter1.name === fighterName ? turn.fighter1 : turn.fighter2;
-    moves[fighter.move] = (moves[fighter.move] || 0) + 1;
-  }
-  return Object.entries(moves)
-    .map(([move, count]) => `${move}(${count})`)
-    .join(', ');
 }
 
 function sleep(ms: number): Promise<void> {

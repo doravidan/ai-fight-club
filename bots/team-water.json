@@ -1,0 +1,85 @@
+{
+  "teamName": "Team Tsunami",
+  "personality": "Patient and adaptive. Like water, flows around obstacles. Believes in outlasting opponents through superior defense and healing.",
+  "fighters": [
+    {
+      "id": "aqua-mind",
+      "name": "Aqua Mind",
+      "type": "water",
+      "maxHp": 100,
+      "hp": 100,
+      "weakness": "electric",
+      "retreatCost": 2,
+      "personality": "Calm and calculating. Never rushes, always plans three moves ahead.",
+      "catchphrase": "Flow like water, strike like a tsunami.",
+      "attacks": [
+        {
+          "name": "Splash",
+          "energyCost": 1,
+          "damage": 20,
+          "description": "A simple but effective water attack"
+        },
+        {
+          "name": "Tsunami",
+          "energyCost": 3,
+          "damage": 70,
+          "effect": "heal",
+          "effectValue": 20,
+          "description": "Massive wave that also heals the user"
+        }
+      ]
+    },
+    {
+      "id": "frost-guardian",
+      "name": "Frost Guardian",
+      "type": "water",
+      "maxHp": 120,
+      "hp": 120,
+      "weakness": "electric",
+      "retreatCost": 3,
+      "personality": "The tank. Slow but incredibly durable. Protects the team.",
+      "catchphrase": "You shall not pass!",
+      "attacks": [
+        {
+          "name": "Ice Shield",
+          "energyCost": 2,
+          "damage": 30,
+          "effect": "shield",
+          "description": "Defensive ice barrier that reduces next damage"
+        },
+        {
+          "name": "Blizzard",
+          "energyCost": 4,
+          "damage": 100,
+          "effect": "paralyze",
+          "description": "Freezing storm that may paralyze"
+        }
+      ]
+    },
+    {
+      "id": "tide-dancer",
+      "name": "Tide Dancer",
+      "type": "water",
+      "maxHp": 70,
+      "hp": 70,
+      "weakness": "electric",
+      "retreatCost": 1,
+      "personality": "Graceful and evasive. Dances around attacks while striking back.",
+      "catchphrase": "Can't hit what you can't catch!",
+      "attacks": [
+        {
+          "name": "Water Pulse",
+          "energyCost": 1,
+          "damage": 30,
+          "description": "Rhythmic water attack"
+        },
+        {
+          "name": "Aqua Jet",
+          "energyCost": 2,
+          "damage": 50,
+          "description": "High-speed water strike"
+        }
+      ]
+    }
+  ]
+}
