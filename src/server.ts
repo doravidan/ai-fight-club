@@ -12,6 +12,7 @@ import { runMatch, MatchEvent, TeamConfig } from './match/runner.js';
 import type { MatchState } from './engine/types.js';
 import { registerArenaRoutes } from './arena/routes.js';
 import { registerBrowserArenaRoutes } from './arena/browser-routes.js';
+import { registerAgentRoutes } from './arena/agent-routes.js';
 
 const fastify = Fastify({ logger: true });
 
@@ -156,9 +157,30 @@ fastify.get('/api/matches', async () => {
 // Health check
 fastify.get('/health', async () => ({ status: 'ok', version: '3.0-arena' }));
 
+// Serve claim page
+fastify.get('/claim/:token', async (request, reply) => {
+  const claimPagePath = join(__dirname, 'claim-page.html');
+  if (existsSync(claimPagePath)) {
+    const html = readFileSync(claimPagePath, 'utf-8');
+    reply.type('text/html').send(html);
+  } else {
+    // Fallback: serve from src during development
+    const srcPath = join(__dirname, '..', 'src', 'claim-page.html');
+    if (existsSync(srcPath)) {
+      const html = readFileSync(srcPath, 'utf-8');
+      reply.type('text/html').send(html);
+    } else {
+      reply.status(404).send('Claim page not found');
+    }
+  }
+});
+
 // Register arena routes (bot vs bot)
 await registerArenaRoutes(fastify);
 await registerBrowserArenaRoutes(fastify);
+
+// Register agent routes (Moltbook-style registration)
+await registerAgentRoutes(fastify);
 
 // Serve static files in production
 const distPath = join(__dirname, '..', 'dist');

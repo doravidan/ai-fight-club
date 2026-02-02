@@ -150,48 +150,5 @@ export async function registerBrowserArenaRoutes(fastify: FastifyInstance) {
     };
   });
   
-  // Override queue join to track bot-match mapping
-  const originalJoin = arena.joinQueue;
-  fastify.post<{
-    Body: { botId: string }
-  }>('/api/arena/queue/join', async (request, reply) => {
-    const { botId } = request.body;
-    
-    if (!botId) {
-      reply.status(400);
-      return { error: 'botId required' };
-    }
-    
-    const bot = arena.getBot(botId);
-    if (!bot) {
-      reply.status(404);
-      return { error: 'Bot not found' };
-    }
-    
-    try {
-      const result = arena.joinQueue(botId);
-      
-      // Check if match was created immediately
-      setTimeout(() => {
-        // Poll for match creation
-        const checkInterval = setInterval(() => {
-          // Look through recent matches for this bot
-          // This is a simplified approach
-        }, 500);
-        
-        setTimeout(() => clearInterval(checkInterval), 30000);
-      }, 100);
-      
-      return {
-        status: 'queued',
-        position: result.position,
-        message: result.position === 1 
-          ? 'Waiting for opponent...' 
-          : `Position ${result.position} in queue`
-      };
-    } catch (error: any) {
-      reply.status(400);
-      return { error: error.message };
-    }
-  });
+  // Note: queue/join is handled in routes.ts - removed duplicate here
 }
