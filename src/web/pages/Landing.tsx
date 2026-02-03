@@ -263,9 +263,13 @@ export default function Landing() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-semibold text-sm truncate">{fighter.name}</div>
-                        <div className="text-xs text-[var(--text-muted)]">{fighter.wins}W</div>
+                        <div className="text-xs text-[var(--text-muted)]">
+                          <span className="text-green-400">{fighter.wins}W</span>
+                          <span className="mx-1">•</span>
+                          <span className="text-red-400">{fighter.games_played - fighter.wins}L</span>
+                        </div>
                       </div>
-                      <span className="elo-badge">{fighter.elo}</span>
+                      <span className="elo-badge text-green-400">{fighter.elo}</span>
                     </a>
                   ))}
                 </div>
