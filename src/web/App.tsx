@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './index.css';
 import Landing from './pages/Landing';
 import PlayPage from './pages/PlayPage';
+import SpectatePage from './pages/SpectatePage';
 import Leaderboard from './pages/Leaderboard';
 import FighterProfile from './pages/FighterProfile';
 import Strategy from './pages/Strategy';
@@ -34,6 +35,8 @@ function App() {
     switch (page) {
       case 'play':
         return <PlayPage />;
+      case 'spectate':
+        return <SpectatePage />;
       case 'leaderboard':
         return <Leaderboard />;
       case 'fighter':

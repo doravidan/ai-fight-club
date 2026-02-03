@@ -21,6 +21,7 @@ await fastify.register(cors, { origin: true });
 
 const activeMatches = new Map<string, MatchState>();
 const matchSubscribers = new Map<string, Set<(event: MatchEvent) => void>>();
+const liveMatchIds = new Set<string>(); // Track matches currently in progress
 
 // List available teams
 fastify.get('/api/teams', async () => {
@@ -69,9 +70,17 @@ fastify.post<{
 
     const matchId = `match_${Date.now()}`;
     
+    // Track as live match
+    liveMatchIds.add(matchId);
+    
     runMatch(team1Config, team2Config, (event) => {
       if (event.type === 'start' || event.type === 'end') {
         activeMatches.set(matchId, event.data as MatchState);
+      }
+      
+      // Remove from live when finished
+      if (event.type === 'end') {
+        liveMatchIds.delete(matchId);
       }
       
       const subscribers = matchSubscribers.get(matchId);
@@ -80,6 +89,7 @@ fastify.post<{
       }
     }).then(result => {
       activeMatches.set(matchId, result);
+      liveMatchIds.delete(matchId);
     });
 
     return { matchId, status: 'started' };
@@ -87,6 +97,29 @@ fastify.post<{
     reply.status(400);
     return { error: 'Failed to start match', details: String(error) };
   }
+});
+
+// Get live matches for spectating
+fastify.get('/api/matches/live', async () => {
+  const liveMatches = Array.from(liveMatchIds).map(id => {
+    const match = activeMatches.get(id);
+    if (!match) return null;
+    return {
+      id,
+      player1: match.player1.name,
+      player2: match.player2.name,
+      player1Knockouts: match.player1.knockouts,
+      player2Knockouts: match.player2.knockouts,
+      currentTurn: match.currentTurn,
+      status: match.status,
+      spectators: matchSubscribers.get(id)?.size || 0
+    };
+  }).filter(Boolean);
+  
+  return { 
+    count: liveMatches.length,
+    matches: liveMatches 
+  };
 });
 
 // Get match state

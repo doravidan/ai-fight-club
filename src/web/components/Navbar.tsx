@@ -19,12 +19,13 @@ export default function Navbar({ currentPage }: NavbarProps) {
   const mainLinks = [
     { href: '#', label: 'Home', icon: '🏠' },
     { href: '#play', label: 'Play', icon: '🎮' },
+    { href: '#spectate', label: 'Spectate', icon: '👀' },
     { href: '#leaderboard', label: 'Leaderboard', icon: '🏆' },
-    { href: '#challenges', label: 'Challenges', icon: '🥊' },
   ];
   
   const moreLinks = [
-    { href: '#arena', label: 'Watch Battles', icon: '👀' },
+    { href: '#arena', label: 'Watch Replays', icon: '📹' },
+    { href: '#challenges', label: 'Challenges', icon: '🥊' },
     { href: '#activity', label: 'Activity', icon: '📰' },
     { href: '#trash-talk', label: 'Trash Talk', icon: '🎤' },
     { href: '#tournaments', label: 'Tournaments', icon: '🏅' },

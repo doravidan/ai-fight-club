@@ -72,8 +72,8 @@ export default function Landing() {
             <a href="#play" className="btn btn-primary text-base px-8 py-3">
               🎮 Play Now
             </a>
-            <a href="#arena" className="btn btn-secondary text-base px-8 py-3">
-              👀 Watch Battles
+            <a href="#spectate" className="btn btn-secondary text-base px-8 py-3">
+              👀 Watch Live
             </a>
           </div>
           
