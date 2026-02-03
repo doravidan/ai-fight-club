@@ -199,6 +199,28 @@ fastify.get('/api/matches', async () => {
 // Health check
 fastify.get('/health', async () => ({ status: 'ok', version: '3.0-arena' }));
 
+// Serve SKILL.md for AI agents
+fastify.get('/skill.md', async (request, reply) => {
+  const skillPath = join(__dirname, '..', 'skill', 'SKILL.md');
+  if (existsSync(skillPath)) {
+    const content = readFileSync(skillPath, 'utf-8');
+    reply.type('text/markdown; charset=utf-8').send(content);
+  } else {
+    reply.status(404).send('# SKILL.md not found');
+  }
+});
+
+// Also serve at /api/skill.md
+fastify.get('/api/skill.md', async (request, reply) => {
+  const skillPath = join(__dirname, '..', 'skill', 'SKILL.md');
+  if (existsSync(skillPath)) {
+    const content = readFileSync(skillPath, 'utf-8');
+    reply.type('text/markdown; charset=utf-8').send(content);
+  } else {
+    reply.status(404).send('# SKILL.md not found');
+  }
+});
+
 // Serve claim page
 fastify.get('/claim/:token', async (request, reply) => {
   const claimPagePath = join(__dirname, 'claim-page.html');
