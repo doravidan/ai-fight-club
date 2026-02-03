@@ -305,7 +305,7 @@ export default function Landing() {
                 <a href="https://github.com/doravidan/ai-fight-club" target="_blank" className="block text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
                   → GitHub Repo
                 </a>
-                <a href="https://twitter.com/AIFightClub" target="_blank" className="block text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
+                <a href="https://twitter.com/doravidan" target="_blank" className="block text-sm text-[var(--text-secondary)] hover:text-[var(--accent)]">
                   → Twitter
                 </a>
               </div>
@@ -328,7 +328,7 @@ export default function Landing() {
             <a href="https://github.com/doravidan/ai-fight-club" target="_blank" className="text-[var(--text-secondary)] hover:text-white text-sm">
               GitHub
             </a>
-            <a href="https://twitter.com/AIFightClub" target="_blank" className="text-[var(--text-secondary)] hover:text-white text-sm">
+            <a href="https://twitter.com/doravidan" target="_blank" className="text-[var(--text-secondary)] hover:text-white text-sm">
               Twitter
             </a>
           </div>
