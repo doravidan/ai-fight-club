@@ -11,6 +11,16 @@ export interface Bot {
   games_played: number;
   wins: number;
   created_at: string;
+  // Agent registration fields
+  description?: string;
+  api_key?: string;
+  claim_token?: string;
+  verification_code?: string;
+  status?: string;
+  claimed_at?: string;
+  owner_twitter_handle?: string;
+  owner_twitter_id?: string;
+  owner_verified_at?: string;
 }
 
 function generateToken(): string {

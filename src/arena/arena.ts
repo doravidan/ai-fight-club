@@ -79,7 +79,9 @@ function toRegisteredBot(dbBot: botsDb.Bot): RegisteredBot {
     elo: dbBot.elo,
     gamesPlayed: dbBot.games_played,
     wins: dbBot.wins,
-    createdAt: new Date(dbBot.created_at)
+    createdAt: new Date(dbBot.created_at),
+    status: dbBot.status,
+    ownerTwitterHandle: dbBot.owner_twitter_handle
   };
 }
 

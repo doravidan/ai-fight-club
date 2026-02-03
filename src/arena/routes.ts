@@ -70,7 +70,9 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
         elo: bot.elo,
         gamesPlayed: bot.gamesPlayed,
         wins: bot.wins,
-        winRate: bot.gamesPlayed > 0 ? (bot.wins / bot.gamesPlayed * 100).toFixed(1) + '%' : 'N/A'
+        winRate: bot.gamesPlayed > 0 ? (bot.wins / bot.gamesPlayed * 100).toFixed(1) + '%' : 'N/A',
+        owner: bot.ownerTwitterHandle,
+        verified: bot.status === 'claimed' || bot.status === 'active'
       }))
     };
   });

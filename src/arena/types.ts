@@ -9,6 +9,8 @@ export interface RegisteredBot {
   gamesPlayed: number;
   wins: number;
   createdAt: Date;
+  status?: string;
+  ownerTwitterHandle?: string;
 }
 
 export interface MatchQueueEntry {

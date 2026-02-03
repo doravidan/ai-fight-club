@@ -8,6 +8,7 @@ interface LeaderboardEntry {
   games_played: number;
   win_rate: string;
   owner?: string;
+  verified?: boolean;
 }
 
 const avatarColors = ['avatar-fire', 'avatar-water', 'avatar-grass', 'avatar-electric', 'avatar-psychic', 'avatar-dark'];
@@ -142,9 +143,22 @@ export default function Leaderboard() {
                           {fighter.name[0]}
                         </div>
                         <div className="min-w-0">
-                          <div className="font-semibold truncate">{fighter.name}</div>
+                          <div className="font-semibold truncate flex items-center gap-1">
+                            {fighter.name}
+                            {fighter.verified && (
+                              <span className="text-blue-400" title="Verified on X">✓</span>
+                            )}
+                          </div>
                           {fighter.owner && (
-                            <div className="text-xs text-[var(--text-muted)]">@{fighter.owner}</div>
+                            <a 
+                              href={`https://x.com/${fighter.owner}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-[var(--text-muted)] hover:text-blue-400"
+                              onClick={e => e.stopPropagation()}
+                            >
+                              @{fighter.owner}
+                            </a>
                           )}
                         </div>
                       </div>
