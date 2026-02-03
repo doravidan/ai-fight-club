@@ -5,7 +5,7 @@ import * as arena from './arena.js';
 
 export async function registerArenaRoutes(fastify: FastifyInstance) {
   
-  // Register a new bot
+  // Register a new bot or login existing one by name
   fastify.post<{
     Body: { name: string; callbackUrl: string }
   }>('/api/arena/register', async (request, reply) => {
@@ -17,13 +17,18 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
     }
     
     try {
-      const { bot, token } = arena.registerBot(name, callbackUrl);
+      const { bot, token, isNew } = arena.registerBot(name, callbackUrl);
       return {
         botId: bot.id,
         name: bot.name,
         token,
         secret: bot.secret,
-        elo: bot.elo
+        elo: bot.elo,
+        gamesPlayed: bot.gamesPlayed,
+        wins: bot.wins,
+        winRate: bot.gamesPlayed > 0 ? (bot.wins / bot.gamesPlayed * 100).toFixed(1) + '%' : 'N/A',
+        isNew,
+        message: isNew ? 'Welcome to the arena!' : `Welcome back! You have ${bot.wins} wins.`
       };
     } catch (error) {
       reply.status(500);

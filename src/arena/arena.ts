@@ -119,8 +119,18 @@ function generateSignature(payload: string, secret: string): string {
   return crypto.createHmac('sha256', secret).update(payload).digest('hex');
 }
 
-// Register a new bot
-export function registerBot(name: string, callbackUrl: string): { bot: RegisteredBot; token: string } {
+// Register a new bot or return existing one by name
+export function registerBot(name: string, callbackUrl: string): { bot: RegisteredBot; token: string; isNew: boolean } {
+  // Check if bot with this name already exists
+  const existingBot = getBotByName(name);
+  if (existingBot) {
+    // Update callback URL and return existing bot
+    existingBot.callbackUrl = callbackUrl;
+    saveBots();
+    return { bot: existingBot, token: existingBot.secret, isNew: false };
+  }
+  
+  // Create new bot
   const id = `bot_${crypto.randomBytes(8).toString('hex')}`;
   const secret = generateToken();
   const token = generateToken();
@@ -139,7 +149,7 @@ export function registerBot(name: string, callbackUrl: string): { bot: Registere
   bots.set(id, bot);
   saveBots();
   
-  return { bot, token };
+  return { bot, token, isNew: true };
 }
 
 // Get bot by ID

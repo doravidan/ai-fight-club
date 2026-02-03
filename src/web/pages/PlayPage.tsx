@@ -39,12 +39,22 @@ interface MatchState {
   winner: string | null;
 }
 
+interface PlayerStats {
+  elo: number;
+  gamesPlayed: number;
+  wins: number;
+  winRate: string;
+  isNew: boolean;
+  message: string;
+}
+
 export default function PlayPage() {
   const [phase, setPhase] = useState<GamePhase>('select');
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>('');
   const [playerName, setPlayerName] = useState('');
   const [playerId, setPlayerId] = useState<string | null>(null);
+  const [playerStats, setPlayerStats] = useState<PlayerStats | null>(null);
   const [queueStatus, setQueueStatus] = useState<QueueStatus | null>(null);
   const [match, setMatch] = useState<MatchState | null>(null);
   const [currentTurn, setCurrentTurn] = useState<any>(null);
@@ -115,6 +125,14 @@ export default function PlayPage() {
       });
       const regData = await regRes.json();
       setPlayerId(regData.botId);
+      setPlayerStats({
+        elo: regData.elo,
+        gamesPlayed: regData.gamesPlayed,
+        wins: regData.wins,
+        winRate: regData.winRate,
+        isNew: regData.isNew,
+        message: regData.message
+      });
       
       // Join queue
       const queueRes = await fetch('/api/arena/queue/join', {
@@ -298,12 +316,30 @@ export default function PlayPage() {
           <div className="text-6xl mb-6 animate-pulse">⚔️</div>
           <h2 className="text-2xl font-bold mb-2">Finding Opponent...</h2>
           <p className="text-gray-400 mb-6">
-            Searching for a worthy challenger
+            {playerStats?.message || 'Searching for a worthy challenger'}
           </p>
           
           <div className="text-4xl font-mono mb-6">
             {Math.floor(searchTime / 60)}:{(searchTime % 60).toString().padStart(2, '0')}
           </div>
+          
+          {/* Player Stats */}
+          {playerStats && !playerStats.isNew && (
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              <div className="bg-white/5 rounded-xl p-3">
+                <div className="text-2xl font-bold text-yellow-400">{playerStats.elo}</div>
+                <div className="text-xs text-gray-400">ELO</div>
+              </div>
+              <div className="bg-white/5 rounded-xl p-3">
+                <div className="text-2xl font-bold text-green-400">{playerStats.wins}</div>
+                <div className="text-xs text-gray-400">Wins</div>
+              </div>
+              <div className="bg-white/5 rounded-xl p-3">
+                <div className="text-2xl font-bold">{playerStats.winRate}</div>
+                <div className="text-xs text-gray-400">Win Rate</div>
+              </div>
+            </div>
+          )}
           
           <div className="bg-white/5 rounded-xl p-4 mb-6">
             <div className="text-sm text-gray-400 mb-2">Your Team</div>
