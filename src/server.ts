@@ -64,13 +64,17 @@ fastify.get('/api/bots', async () => {
 
 // Start a new match
 fastify.post<{
-  Body: { team1: string; team2: string };
+  Body: { team1: string; team2: string; player1Name?: string; player2Name?: string };
 }>('/api/match/start', async (request, reply) => {
-  const { team1, team2 } = request.body;
+  const { team1, team2, player1Name, player2Name } = request.body;
 
   try {
     const team1Config: TeamConfig = JSON.parse(readFileSync(`./bots/${team1}.json`, 'utf-8'));
     const team2Config: TeamConfig = JSON.parse(readFileSync(`./bots/${team2}.json`, 'utf-8'));
+    
+    // Override team names with player names if provided
+    if (player1Name) team1Config.teamName = player1Name;
+    if (player2Name) team2Config.teamName = player2Name;
 
     const matchId = `match_${Date.now()}`;
     

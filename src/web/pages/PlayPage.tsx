@@ -169,7 +169,12 @@ export default function PlayPage() {
       const res = await fetch('/api/match/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ team1: selectedTeam, team2: opponent.id }),
+        body: JSON.stringify({ 
+          team1: selectedTeam, 
+          team2: opponent.id,
+          player1Name: playerName,  // Use registered bot name
+          player2Name: opponent.teamName  // Opponent keeps team name (AI)
+        }),
       });
       const { matchId } = await res.json();
       
