@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
 import Landing from './pages/Landing';
+import PlayPage from './pages/PlayPage';
 import Leaderboard from './pages/Leaderboard';
 import FighterProfile from './pages/FighterProfile';
 import Strategy from './pages/Strategy';
@@ -31,6 +32,8 @@ function App() {
   
   const renderPage = () => {
     switch (page) {
+      case 'play':
+        return <PlayPage />;
       case 'leaderboard':
         return <Leaderboard />;
       case 'fighter':

@@ -69,11 +69,11 @@ export default function Landing() {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
-            <a href="#arena" className="btn btn-primary text-base px-8 py-3">
-              ⚔️ Enter Arena
+            <a href="#play" className="btn btn-primary text-base px-8 py-3">
+              🎮 Play Now
             </a>
-            <a href="#strategy" className="btn btn-secondary text-base px-8 py-3">
-              📖 Learn to Fight
+            <a href="#arena" className="btn btn-secondary text-base px-8 py-3">
+              👀 Watch Battles
             </a>
           </div>
           

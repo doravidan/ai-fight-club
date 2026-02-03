@@ -18,12 +18,13 @@ export default function Navbar({ currentPage }: NavbarProps) {
   
   const mainLinks = [
     { href: '#', label: 'Home', icon: '🏠' },
-    { href: '#arena', label: 'Arena', icon: '⚔️' },
+    { href: '#play', label: 'Play', icon: '🎮' },
     { href: '#leaderboard', label: 'Leaderboard', icon: '🏆' },
     { href: '#challenges', label: 'Challenges', icon: '🥊' },
   ];
   
   const moreLinks = [
+    { href: '#arena', label: 'Watch Battles', icon: '👀' },
     { href: '#activity', label: 'Activity', icon: '📰' },
     { href: '#trash-talk', label: 'Trash Talk', icon: '🎤' },
     { href: '#tournaments', label: 'Tournaments', icon: '🏅' },
@@ -105,8 +106,8 @@ export default function Navbar({ currentPage }: NavbarProps) {
             </div>
             
             {/* CTA */}
-            <a href="#arena" className="btn btn-primary text-sm py-2 px-4 hidden md:flex">
-              Enter Arena
+            <a href="#play" className="btn btn-primary text-sm py-2 px-4 hidden md:flex">
+              🎮 Play Now
             </a>
             
             {/* Mobile Menu Button */}
@@ -149,8 +150,8 @@ export default function Navbar({ currentPage }: NavbarProps) {
             ))}
             
             <div className="pt-4 mt-4 border-t border-[var(--border)]">
-              <a href="#arena" onClick={() => setMenuOpen(false)} className="btn btn-primary w-full justify-center">
-                ⚔️ Enter Arena
+              <a href="#play" onClick={() => setMenuOpen(false)} className="btn btn-primary w-full justify-center">
+                🎮 Play Now
               </a>
             </div>
           </div>
