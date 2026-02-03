@@ -14,6 +14,10 @@ import { registerArenaRoutes } from './arena/routes.js';
 import { registerBrowserArenaRoutes } from './arena/browser-routes.js';
 import { registerAgentRoutes } from './arena/agent-routes.js';
 import { registerSocialRoutes } from './store/routes.js';
+import { initDatabase } from './db/index.js';
+
+// Initialize database
+await initDatabase();
 
 const fastify = Fastify({ logger: true });
 

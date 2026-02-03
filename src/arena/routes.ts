@@ -1,4 +1,4 @@
-// Arena API routes
+// Arena API routes - Using Turso database
 
 import { FastifyInstance } from 'fastify';
 import * as arena from './arena.js';
@@ -17,7 +17,7 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
     }
     
     try {
-      const { bot, token, isNew } = arena.registerBot(name, callbackUrl);
+      const { bot, token, isNew } = await arena.registerBot(name, callbackUrl);
       return {
         botId: bot.id,
         name: bot.name,
@@ -31,6 +31,7 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
         message: isNew ? 'Welcome to the arena!' : `Welcome back! You have ${bot.wins} wins.`
       };
     } catch (error) {
+      console.error('Registration error:', error);
       reply.status(500);
       return { error: 'Failed to register bot' };
     }
@@ -40,7 +41,7 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
   fastify.get<{
     Params: { id: string }
   }>('/api/arena/bot/:id', async (request, reply) => {
-    const bot = arena.getBot(request.params.id);
+    const bot = await arena.getBot(request.params.id);
     if (!bot) {
       reply.status(404);
       return { error: 'Bot not found' };
@@ -60,7 +61,7 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
     Querystring: { limit?: string }
   }>('/api/arena/leaderboard', async (request) => {
     const limit = parseInt(request.query.limit || '10');
-    const leaderboard = arena.getLeaderboard(limit);
+    const leaderboard = await arena.getLeaderboard(limit);
     
     return {
       leaderboard: leaderboard.map((bot, index) => ({
@@ -86,7 +87,7 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
     }
     
     try {
-      const result = arena.joinQueue(botId);
+      const result = await arena.joinQueue(botId);
       return {
         status: 'queued',
         position: result.position,
@@ -156,7 +157,7 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
   
   // Arena stats
   fastify.get('/api/arena/stats', async () => {
-    return arena.getGlobalStats();
+    return await arena.getGlobalStats();
   });
   
   // Match history
@@ -164,7 +165,7 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
     Querystring: { limit?: string }
   }>('/api/arena/matches', async (request) => {
     const limit = parseInt(request.query.limit || '50');
-    const matches = arena.getAllMatches(limit);
+    const matches = await arena.getAllMatches(limit);
     
     return {
       matches: matches.map(m => ({
@@ -173,7 +174,7 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
         player2: m.bot2.name,
         winner: m.winner ? (m.winner === m.bot1.id ? m.bot1.name : m.bot2.name) : 'Draw',
         createdAt: m.createdAt,
-        turnsPlayed: m.replay.length
+        turnsPlayed: m.replay?.length || 0
       }))
     };
   });
@@ -183,14 +184,14 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
     Params: { id: string };
     Querystring: { limit?: string }
   }>('/api/arena/bot/:id/matches', async (request, reply) => {
-    const bot = arena.getBot(request.params.id);
+    const bot = await arena.getBot(request.params.id);
     if (!bot) {
       reply.status(404);
       return { error: 'Bot not found' };
     }
     
     const limit = parseInt(request.query.limit || '20');
-    const matches = arena.getBotMatches(request.params.id, limit);
+    const matches = await arena.getBotMatches(request.params.id, limit);
     
     return {
       bot: bot.name,
@@ -208,12 +209,10 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
     Querystring: { limit?: string }
   }>('/api/arena/bots', async (request) => {
     const limit = parseInt(request.query.limit || '100');
-    const bots = arena.getAllBots()
-      .sort((a, b) => b.elo - a.elo)
-      .slice(0, limit);
+    const bots = await arena.getAllBots();
     
     return {
-      bots: bots.map(bot => ({
+      bots: bots.slice(0, limit).map(bot => ({
         id: bot.id,
         name: bot.name,
         elo: bot.elo,

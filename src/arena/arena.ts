@@ -1,8 +1,9 @@
 // Arena service - matchmaking, game execution, rankings
-// With persistent file storage
+// Using Turso database for persistence
 
 import crypto from 'crypto';
-import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
+import * as botsDb from '../db/bots.js';
+import * as matchesDb from '../db/matches.js';
 import {
   RegisteredBot, ArenaMatch, WebhookPayload, BotResponse,
   GameStateForBot, TurnRecord, calculateEloChange
@@ -11,82 +12,12 @@ import { TeamConfig } from '../match/runner.js';
 import { FighterCard, Player } from '../engine/types.js';
 import { processTurn, checkWinner } from '../engine/combat.js';
 
-// Data directory
-const DATA_DIR = './data';
-const BOTS_FILE = `${DATA_DIR}/bots.json`;
-const MATCHES_FILE = `${DATA_DIR}/matches.json`;
-
-// Ensure data directory exists
-if (!existsSync(DATA_DIR)) {
-  mkdirSync(DATA_DIR, { recursive: true });
-}
-
-// Load persisted data
-function loadBots(): Map<string, RegisteredBot> {
-  try {
-    if (existsSync(BOTS_FILE)) {
-      const data = JSON.parse(readFileSync(BOTS_FILE, 'utf-8'));
-      const map = new Map<string, RegisteredBot>();
-      for (const bot of data) {
-        bot.createdAt = new Date(bot.createdAt);
-        map.set(bot.id, bot);
-      }
-      console.log(`Loaded ${map.size} bots from storage`);
-      return map;
-    }
-  } catch (e) {
-    console.error('Failed to load bots:', e);
-  }
-  return new Map();
-}
-
-function loadMatches(): Map<string, ArenaMatch> {
-  try {
-    if (existsSync(MATCHES_FILE)) {
-      const data = JSON.parse(readFileSync(MATCHES_FILE, 'utf-8'));
-      const map = new Map<string, ArenaMatch>();
-      for (const match of data) {
-        match.createdAt = new Date(match.createdAt);
-        if (match.finishedAt) match.finishedAt = new Date(match.finishedAt);
-        map.set(match.id, match);
-      }
-      console.log(`Loaded ${map.size} matches from storage`);
-      return map;
-    }
-  } catch (e) {
-    console.error('Failed to load matches:', e);
-  }
-  return new Map();
-}
-
-function saveBots(): void {
-  try {
-    const data = Array.from(bots.values());
-    writeFileSync(BOTS_FILE, JSON.stringify(data, null, 2));
-  } catch (e) {
-    console.error('Failed to save bots:', e);
-  }
-}
-
-function saveMatches(): void {
-  try {
-    // Only save last 1000 matches to prevent file bloat
-    const allMatches = Array.from(matches.values());
-    const recentMatches = allMatches
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 1000);
-    writeFileSync(MATCHES_FILE, JSON.stringify(recentMatches, null, 2));
-  } catch (e) {
-    console.error('Failed to save matches:', e);
-  }
-}
-
-// Persistent storage
-const bots = loadBots();
-const matches = loadMatches();
+// In-memory queue and active matches (these don't need persistence)
 const matchQueue: string[] = [];
+const activeMatches = new Map<string, ArenaMatch>();
+const botCache = new Map<string, RegisteredBot>();
 
-// Default team for bots (they can customize via callback)
+// Default team for bots
 const DEFAULT_TEAM: TeamConfig = {
   teamName: 'Default Team',
   personality: 'A balanced fighter',
@@ -109,91 +40,100 @@ const DEFAULT_TEAM: TeamConfig = {
   ]
 };
 
-// Generate secure token
 function generateToken(): string {
   return crypto.randomBytes(32).toString('hex');
 }
 
-// Generate signature for webhook
 function generateSignature(payload: string, secret: string): string {
   return crypto.createHmac('sha256', secret).update(payload).digest('hex');
 }
 
-// Register a new bot or return existing one by name
-export function registerBot(name: string, callbackUrl: string): { bot: RegisteredBot; token: string; isNew: boolean } {
-  // Check if bot with this name already exists
-  const existingBot = getBotByName(name);
-  if (existingBot) {
-    // Update callback URL and return existing bot
-    existingBot.callbackUrl = callbackUrl;
-    saveBots();
-    return { bot: existingBot, token: existingBot.secret, isNew: false };
-  }
-  
-  // Create new bot
-  const id = `bot_${crypto.randomBytes(8).toString('hex')}`;
-  const secret = generateToken();
-  const token = generateToken();
-  
-  const bot: RegisteredBot = {
-    id,
-    name,
-    callbackUrl,
-    secret,
-    elo: 1200,
-    gamesPlayed: 0,
-    wins: 0,
-    createdAt: new Date()
+// Convert DB bot to RegisteredBot
+function toRegisteredBot(dbBot: botsDb.Bot): RegisteredBot {
+  return {
+    id: dbBot.id,
+    name: dbBot.name,
+    callbackUrl: dbBot.callback_url,
+    secret: dbBot.secret,
+    elo: dbBot.elo,
+    gamesPlayed: dbBot.games_played,
+    wins: dbBot.wins,
+    createdAt: new Date(dbBot.created_at)
   };
-  
-  bots.set(id, bot);
-  saveBots();
-  
-  return { bot, token, isNew: true };
+}
+
+// Register a new bot or return existing
+export async function registerBot(name: string, callbackUrl: string): Promise<{ bot: RegisteredBot; token: string; isNew: boolean }> {
+  const { bot, token, isNew } = await botsDb.registerBot(name, callbackUrl);
+  const registeredBot = toRegisteredBot(bot);
+  botCache.set(bot.id, registeredBot);
+  return { bot: registeredBot, token, isNew };
 }
 
 // Get bot by ID
-export function getBot(id: string): RegisteredBot | undefined {
-  return bots.get(id);
+export async function getBot(id: string): Promise<RegisteredBot | undefined> {
+  // Check cache first
+  if (botCache.has(id)) {
+    return botCache.get(id);
+  }
+  const bot = await botsDb.getBot(id);
+  if (bot) {
+    const registeredBot = toRegisteredBot(bot);
+    botCache.set(id, registeredBot);
+    return registeredBot;
+  }
+  return undefined;
 }
 
 // Get bot by name
-export function getBotByName(name: string): RegisteredBot | undefined {
-  return Array.from(bots.values()).find(b => b.name.toLowerCase() === name.toLowerCase());
+export async function getBotByName(name: string): Promise<RegisteredBot | undefined> {
+  const bot = await botsDb.getBotByName(name);
+  return bot ? toRegisteredBot(bot) : undefined;
 }
 
 // Get all bots
-export function getAllBots(): RegisteredBot[] {
-  return Array.from(bots.values());
+export async function getAllBots(): Promise<RegisteredBot[]> {
+  const bots = await botsDb.getAllBots();
+  return bots.map(toRegisteredBot);
 }
 
 // Get leaderboard
-export function getLeaderboard(limit: number = 10): RegisteredBot[] {
-  return Array.from(bots.values())
-    .filter(b => b.gamesPlayed > 0)
-    .sort((a, b) => b.elo - a.elo)
-    .slice(0, limit);
+export async function getLeaderboard(limit: number = 10): Promise<RegisteredBot[]> {
+  const bots = await botsDb.getLeaderboard(limit);
+  return bots.map(toRegisteredBot);
 }
 
-// Get all matches (for history)
-export function getAllMatches(limit: number = 100): ArenaMatch[] {
-  return Array.from(matches.values())
-    .filter(m => m.status === 'finished')
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, limit);
+// Get all matches
+export async function getAllMatches(limit: number = 100): Promise<any[]> {
+  const matches = await matchesDb.getAllMatches(limit);
+  return matches.map(m => ({
+    id: m.id,
+    bot1: { id: m.bot1_id, name: m.bot1_name },
+    bot2: { id: m.bot2_id, name: m.bot2_name },
+    winner: m.winner_id,
+    status: m.status,
+    createdAt: m.created_at,
+    replay: m.replay ? JSON.parse(m.replay) : []
+  }));
 }
 
-// Get matches for a specific bot
-export function getBotMatches(botId: string, limit: number = 20): ArenaMatch[] {
-  return Array.from(matches.values())
-    .filter(m => m.status === 'finished' && (m.bot1.id === botId || m.bot2.id === botId))
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, limit);
+// Get matches for a bot
+export async function getBotMatches(botId: string, limit: number = 20): Promise<any[]> {
+  const matches = await matchesDb.getBotMatches(botId, limit);
+  return matches.map(m => ({
+    id: m.id,
+    bot1: { id: m.bot1_id, name: m.bot1_name },
+    bot2: { id: m.bot2_id, name: m.bot2_name },
+    winner: m.winner_id,
+    status: m.status,
+    createdAt: m.created_at
+  }));
 }
 
 // Join matchmaking queue
-export function joinQueue(botId: string): { position: number } {
-  if (!bots.has(botId)) {
+export async function joinQueue(botId: string): Promise<{ position: number }> {
+  const bot = await getBot(botId);
+  if (!bot) {
     throw new Error('Bot not found');
   }
   
@@ -202,7 +142,7 @@ export function joinQueue(botId: string): { position: number } {
   }
   
   // Try to create a match
-  tryCreateMatch();
+  await tryCreateMatch();
   
   return { position: matchQueue.indexOf(botId) + 1 };
 }
@@ -215,8 +155,8 @@ export function leaveQueue(botId: string): void {
   }
 }
 
-// Try to create a match from queued bots
-function tryCreateMatch(): ArenaMatch | null {
+// Try to create a match
+async function tryCreateMatch(): Promise<ArenaMatch | null> {
   if (matchQueue.length < 2) {
     return null;
   }
@@ -224,10 +164,12 @@ function tryCreateMatch(): ArenaMatch | null {
   const bot1Id = matchQueue.shift()!;
   const bot2Id = matchQueue.shift()!;
   
-  const bot1 = bots.get(bot1Id)!;
-  const bot2 = bots.get(bot2Id)!;
+  const bot1 = await getBot(bot1Id);
+  const bot2 = await getBot(bot2Id);
   
-  const match = createMatch(bot1, bot2);
+  if (!bot1 || !bot2) return null;
+  
+  const match = await createMatch(bot1, bot2);
   
   // Start the match asynchronously
   runMatch(match.id).catch(console.error);
@@ -236,8 +178,11 @@ function tryCreateMatch(): ArenaMatch | null {
 }
 
 // Create a new match
-function createMatch(bot1: RegisteredBot, bot2: RegisteredBot): ArenaMatch {
+async function createMatch(bot1: RegisteredBot, bot2: RegisteredBot): Promise<ArenaMatch> {
   const id = `match_${Date.now()}`;
+  
+  // Save to database
+  await matchesDb.createMatch(id, bot1.id, bot1.name, bot2.id, bot2.name);
   
   const match: ArenaMatch = {
     id,
@@ -250,15 +195,12 @@ function createMatch(bot1: RegisteredBot, bot2: RegisteredBot): ArenaMatch {
     createdAt: new Date()
   };
   
-  matches.set(id, match);
-  saveMatches();
+  activeMatches.set(id, match);
   
   return match;
 }
 
-// Initialize game state
 function initializeGameState(bot1: RegisteredBot, bot2: RegisteredBot): any {
-  // Create players with default teams (bots can have custom teams later)
   return {
     player1: createPlayer(bot1),
     player2: createPlayer(bot2)
@@ -277,11 +219,7 @@ function createPlayer(bot: RegisteredBot): Player {
   };
 }
 
-// Call bot's webhook to get action
-async function callBotWebhook(
-  bot: RegisteredBot,
-  payload: WebhookPayload
-): Promise<BotResponse> {
+async function callBotWebhook(bot: RegisteredBot, payload: WebhookPayload): Promise<BotResponse> {
   const body = JSON.stringify(payload);
   const signature = generateSignature(body, bot.secret);
   
@@ -289,8 +227,6 @@ async function callBotWebhook(
   const timeout = setTimeout(() => controller.abort(), payload.timeoutMs);
   
   try {
-    const startTime = Date.now();
-    
     const response = await fetch(bot.callbackUrl, {
       method: 'POST',
       headers: {
@@ -302,22 +238,15 @@ async function callBotWebhook(
       signal: controller.signal
     });
     
-    const responseTime = Date.now() - startTime;
-    
-    if (!response.ok) {
-      throw new Error(`Bot returned ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`Bot returned ${response.status}`);
     
     const data = await response.json() as BotResponse;
-    
     return {
       action: data.action || 'PASS',
       thinking: data.thinking || '',
       trashTalk: data.trashTalk || '',
     };
   } catch (error) {
-    console.error(`Bot ${bot.name} webhook failed:`, error);
-    // Default action on timeout/error
     return {
       action: 'ATTACK_1',
       thinking: 'Connection error - auto action',
@@ -328,11 +257,7 @@ async function callBotWebhook(
   }
 }
 
-// Convert game state for bot perspective
-function getGameStateForBot(
-  match: ArenaMatch,
-  isBot1: boolean
-): GameStateForBot {
+function getGameStateForBot(match: ArenaMatch, isBot1: boolean): GameStateForBot {
   const { player1, player2 } = match.gameState;
   const myPlayer = isBot1 ? player1 : player2;
   const enemyPlayer = isBot1 ? player2 : player1;
@@ -368,14 +293,13 @@ function getGameStateForBot(
     history: match.replay.slice(-5).map((r: TurnRecord) => ({
       turn: r.turn,
       yourAction: isBot1 ? r.bot1Action.action : r.bot2Action.action,
-      yourDamage: 0, // TODO: track damage
+      yourDamage: 0,
       enemyAction: isBot1 ? r.bot2Action.action : r.bot1Action.action,
       enemyDamage: 0
     }))
   };
 }
 
-// Parse bot response to game action
 function parseAction(response: BotResponse): { type: string; attackIndex?: number; benchIndex?: number } {
   const action = response.action.toUpperCase();
   
@@ -388,7 +312,7 @@ function parseAction(response: BotResponse): { type: string; attackIndex?: numbe
 
 // Run a match
 export async function runMatch(matchId: string): Promise<void> {
-  const match = matches.get(matchId);
+  const match = activeMatches.get(matchId);
   if (!match) return;
   
   match.status = 'active';
@@ -399,12 +323,8 @@ export async function runMatch(matchId: string): Promise<void> {
   for (let turn = 1; turn <= MAX_TURNS; turn++) {
     match.currentTurn = turn;
     
-    // Check if both have active fighters
-    if (!player1.active || !player2.active) {
-      break;
-    }
+    if (!player1.active || !player2.active) break;
     
-    // Get actions from both bots in parallel
     const [response1, response2] = await Promise.all([
       callBotWebhook(match.bot1, {
         matchId,
@@ -423,7 +343,6 @@ export async function runMatch(matchId: string): Promise<void> {
     const action1 = parseAction(response1);
     const action2 = parseAction(response2);
     
-    // Process turn
     const { result } = processTurn(
       player1, player2,
       action1 as any, action2 as any,
@@ -432,7 +351,6 @@ export async function runMatch(matchId: string): Promise<void> {
       turn
     );
     
-    // Record turn
     match.replay.push({
       turn,
       bot1Action: { ...response1, action: response1.action, responseTimeMs: 0 },
@@ -440,7 +358,6 @@ export async function runMatch(matchId: string): Promise<void> {
       events: result.events
     });
     
-    // Check for winner
     const winner = checkWinner(player1, player2);
     if (winner) {
       await finishMatch(match, winner === player1.name ? match.bot1.id : 
@@ -449,7 +366,6 @@ export async function runMatch(matchId: string): Promise<void> {
     }
   }
   
-  // Time limit - determine winner by knockouts
   const winner = player1.knockouts > player2.knockouts ? match.bot1.id :
                  player2.knockouts > player1.knockouts ? match.bot2.id : null;
   await finishMatch(match, winner);
@@ -459,86 +375,59 @@ export async function runMatch(matchId: string): Promise<void> {
 async function finishMatch(match: ArenaMatch, winnerId: string | null): Promise<void> {
   match.status = 'finished';
   match.winner = winnerId || undefined;
-  (match as any).finishedAt = new Date();
   
-  const bot1 = bots.get(match.bot1.id)!;
-  const bot2 = bots.get(match.bot2.id)!;
+  const winnerName = winnerId === match.bot1.id ? match.bot1.name : 
+                     winnerId === match.bot2.id ? match.bot2.name : null;
   
-  // Update stats
-  bot1.gamesPlayed++;
-  bot2.gamesPlayed++;
+  // Save to database
+  await matchesDb.finishMatch(
+    match.id,
+    winnerId,
+    winnerName,
+    match.replay.length,
+    match.replay
+  );
   
+  // Update bot stats in database
   if (winnerId) {
-    const winner = winnerId === bot1.id ? bot1 : bot2;
-    const loser = winnerId === bot1.id ? bot2 : bot1;
+    const { winnerChange, loserChange } = calculateEloChange(match.bot1.elo, match.bot2.elo);
     
-    winner.wins++;
-    
-    const { winnerChange, loserChange } = calculateEloChange(winner.elo, loser.elo);
-    winner.elo += winnerChange;
-    loser.elo += loserChange;
-    
-    // Notify bots of result
-    notifyResult(winner, match.id, 'win', winnerChange);
-    notifyResult(loser, match.id, 'lose', loserChange);
+    if (winnerId === match.bot1.id) {
+      await botsDb.updateBotStats(match.bot1.id, winnerChange, true);
+      await botsDb.updateBotStats(match.bot2.id, loserChange, false);
+    } else {
+      await botsDb.updateBotStats(match.bot2.id, winnerChange, true);
+      await botsDb.updateBotStats(match.bot1.id, loserChange, false);
+    }
   } else {
     // Draw
-    notifyResult(bot1, match.id, 'draw', 0);
-    notifyResult(bot2, match.id, 'draw', 0);
+    await botsDb.updateBotStats(match.bot1.id, 0, false);
+    await botsDb.updateBotStats(match.bot2.id, 0, false);
   }
   
-  // Persist updates
-  saveBots();
-  saveMatches();
-}
-
-// Notify bot of match result
-async function notifyResult(
-  bot: RegisteredBot,
-  matchId: string,
-  result: 'win' | 'lose' | 'draw',
-  eloChange: number
-): Promise<void> {
-  try {
-    await fetch(`${bot.callbackUrl}/result`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        matchId,
-        result,
-        eloChange,
-        newElo: bot.elo
-      })
-    });
-  } catch (error) {
-    // Result notification is best-effort
-    console.error(`Failed to notify ${bot.name} of result:`, error);
-  }
+  // Clear cache so fresh data is fetched
+  botCache.delete(match.bot1.id);
+  botCache.delete(match.bot2.id);
 }
 
 // Get match by ID
 export function getMatch(id: string): ArenaMatch | undefined {
-  return matches.get(id);
+  return activeMatches.get(id);
 }
 
 // Get queue status
 export function getQueueStatus(): { count: number; bots: string[] } {
   return {
     count: matchQueue.length,
-    bots: matchQueue.map(id => bots.get(id)?.name || id)
+    bots: matchQueue
   };
 }
 
 // Get global stats
-export function getGlobalStats() {
-  const allBots = Array.from(bots.values());
-  const allMatches = Array.from(matches.values()).filter(m => m.status === 'finished');
-  const topPlayer = getLeaderboard(1)[0];
-  
+export async function getGlobalStats() {
+  const stats = await botsDb.getGlobalStats();
   return {
-    totalBots: allBots.length,
-    totalGames: allMatches.length,
-    queueSize: matchQueue.length,
-    topPlayer: topPlayer ? { name: topPlayer.name, elo: topPlayer.elo } : null
+    ...stats,
+    queueSize: matchQueue.length
   };
 }

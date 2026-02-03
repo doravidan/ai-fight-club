@@ -6,6 +6,7 @@ primary_region = 'fra'
 [env]
   BASE_URL = "https://ai-fightclub.com"
   NODE_ENV = "production"
+  TURSO_DATABASE_URL = "libsql://aifightclub-doravidan.aws-us-east-1.turso.io"
 
 [http_service]
   internal_port = 3001
