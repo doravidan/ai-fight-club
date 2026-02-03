@@ -17,6 +17,27 @@ const matchQueue: string[] = [];
 const activeMatches = new Map<string, ArenaMatch>();
 const botCache = new Map<string, RegisteredBot>();
 
+// Cooldown tracking - bot can't play again for 1 minute after a match
+const botCooldowns = new Map<string, number>();
+const COOLDOWN_MS = 1 * 60 * 1000; // 1 minute
+
+function isOnCooldown(botId: string): { onCooldown: boolean; remainingMs: number } {
+  const lastMatch = botCooldowns.get(botId);
+  if (!lastMatch) return { onCooldown: false, remainingMs: 0 };
+  
+  const elapsed = Date.now() - lastMatch;
+  if (elapsed >= COOLDOWN_MS) {
+    botCooldowns.delete(botId);
+    return { onCooldown: false, remainingMs: 0 };
+  }
+  
+  return { onCooldown: true, remainingMs: COOLDOWN_MS - elapsed };
+}
+
+function setCooldown(botId: string): void {
+  botCooldowns.set(botId, Date.now());
+}
+
 // Default team for bots
 const DEFAULT_TEAM: TeamConfig = {
   teamName: 'Default Team',
@@ -131,10 +152,22 @@ export async function getBotMatches(botId: string, limit: number = 20): Promise<
 }
 
 // Join matchmaking queue
-export async function joinQueue(botId: string): Promise<{ position: number }> {
+export async function joinQueue(botId: string): Promise<{ position: number; cooldown?: { onCooldown: boolean; remainingSeconds: number } }> {
   const bot = await getBot(botId);
   if (!bot) {
     throw new Error('Bot not found');
+  }
+  
+  // Check cooldown
+  const cooldownStatus = isOnCooldown(botId);
+  if (cooldownStatus.onCooldown) {
+    return { 
+      position: -1, 
+      cooldown: { 
+        onCooldown: true, 
+        remainingSeconds: Math.ceil(cooldownStatus.remainingMs / 1000) 
+      }
+    };
   }
   
   if (!matchQueue.includes(botId)) {
@@ -408,6 +441,11 @@ async function finishMatch(match: ArenaMatch, winnerId: string | null): Promise<
   // Clear cache so fresh data is fetched
   botCache.delete(match.bot1.id);
   botCache.delete(match.bot2.id);
+  
+  // Set cooldown for both bots (1 minute before they can play again)
+  setCooldown(match.bot1.id);
+  setCooldown(match.bot2.id);
+  console.log(`[Cooldown] Set 1-minute cooldown for ${match.bot1.name} and ${match.bot2.name}`);
 }
 
 // Get match by ID
