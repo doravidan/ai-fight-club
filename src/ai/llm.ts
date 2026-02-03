@@ -69,13 +69,84 @@ export async function getFighterDecision(
 }
 
 function fallbackDecision(player: Player): LLMDecision {
-  // Default to first attack if enough energy, otherwise pass
-  const attackIndex = player.energy >= (player.active?.attacks[0]?.energyCost || 1) ? 0 : 0;
-  
+  const active = player.active;
+  if (!active) {
+    return {
+      thinking: 'No active fighter!',
+      trashTalk: '...',
+      action: { type: 'attack', attackIndex: 0 },
+      raw: 'ERROR',
+    };
+  }
+
+  // Strategy 1: Switch if HP is critical and we have healthy bench
+  const hpPercent = active.hp / active.maxHp;
+  if (hpPercent < 0.25 && player.bench.length > 0 && player.energy >= active.retreatCost) {
+    // Find healthiest bench fighter
+    const healthiestIdx = player.bench.reduce((bestIdx, fighter, idx, arr) => 
+      (fighter.hp / fighter.maxHp) > (arr[bestIdx].hp / arr[bestIdx].maxHp) ? idx : bestIdx, 0);
+    
+    if (player.bench[healthiestIdx].hp / player.bench[healthiestIdx].maxHp > 0.5) {
+      return {
+        thinking: `${active.name} is hurt! Switching to ${player.bench[healthiestIdx].name}`,
+        trashTalk: "Fall back and regroup!",
+        action: { type: 'retreat', benchIndex: healthiestIdx },
+        raw: 'SMART_SWITCH',
+      };
+    }
+  }
+
+  // Strategy 2: Find attacks we can afford
+  const affordableAttacks = active.attacks
+    .map((atk, idx) => ({ ...atk, idx }))
+    .filter(atk => (atk.energyCost || 0) <= player.energy);
+
+  if (affordableAttacks.length > 0) {
+    // Add some randomness: 70% best attack, 30% random affordable
+    if (Math.random() < 0.3 && affordableAttacks.length > 1) {
+      const randomIdx = Math.floor(Math.random() * affordableAttacks.length);
+      const randomAttack = affordableAttacks[randomIdx];
+      return {
+        thinking: `Mixing it up with ${randomAttack.name}!`,
+        trashTalk: getRandomTrashTalk(),
+        action: { type: 'attack', attackIndex: randomAttack.idx },
+        raw: 'SMART_RANDOM',
+      };
+    }
+    
+    // Pick strongest attack
+    affordableAttacks.sort((a, b) => (b.damage || 0) - (a.damage || 0));
+    const bestAttack = affordableAttacks[0];
+    
+    return {
+      thinking: `Going for ${bestAttack.name} - maximum damage!`,
+      trashTalk: getRandomTrashTalk(),
+      action: { type: 'attack', attackIndex: bestAttack.idx },
+      raw: 'SMART_FALLBACK',
+    };
+  }
+
+  // No affordable attacks - use cheapest attack
+  const cheapestIdx = active.attacks.reduce((minIdx, atk, idx, arr) => 
+    (atk.energyCost || 0) < (arr[minIdx].energyCost || 0) ? idx : minIdx, 0);
+
   return {
-    thinking: 'System error - falling back to instinct!',
-    trashTalk: '...',
-    action: { type: 'attack', attackIndex },
-    raw: 'ERROR',
+    thinking: 'Conserving energy, using basic attack',
+    trashTalk: getRandomTrashTalk(),
+    action: { type: 'attack', attackIndex: cheapestIdx },
+    raw: 'SMART_FALLBACK',
   };
+}
+
+function getRandomTrashTalk(): string {
+  const lines = [
+    "Is that all you got?",
+    "Too easy!",
+    "You call that an attack?",
+    "My turn now!",
+    "Prepare to lose!",
+    "This ends here!",
+    "You're going down!",
+  ];
+  return lines[Math.floor(Math.random() * lines.length)];
 }

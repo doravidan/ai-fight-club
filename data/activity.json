@@ -1,0 +1,366 @@
+[
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Tsunami",
+    "targetId": "p2",
+    "targetName": "Team Inferno",
+    "data": {
+      "matchId": "match_1770097189163",
+      "won": true,
+      "turns": 9
+    },
+    "id": "act_1770097189188_5n7joxkme",
+    "timestamp": "2026-02-03T05:39:49.188Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Shadow",
+    "targetId": "p2",
+    "targetName": "Team Tsunami",
+    "data": {
+      "matchId": "match_1770097189132",
+      "won": true,
+      "turns": 11
+    },
+    "id": "act_1770097189162_0tb90cwdm",
+    "timestamp": "2026-02-03T05:39:49.162Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p2",
+    "actorName": "Team Shadow",
+    "targetId": "p1",
+    "targetName": "Team Mind",
+    "data": {
+      "matchId": "match_1770097189110",
+      "won": true,
+      "turns": 8
+    },
+    "id": "act_1770097189131_97j0eu4wb",
+    "timestamp": "2026-02-03T05:39:49.131Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Nature",
+    "targetId": "p2",
+    "targetName": "Team Thunder",
+    "data": {
+      "matchId": "match_1770097189096",
+      "won": true,
+      "turns": 6
+    },
+    "id": "act_1770097189110_u5ufu0438",
+    "timestamp": "2026-02-03T05:39:49.110Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p2",
+    "actorName": "Team Nature",
+    "targetId": "p1",
+    "targetName": "Team Tsunami",
+    "data": {
+      "matchId": "match_1770097189066",
+      "won": true,
+      "turns": 13
+    },
+    "id": "act_1770097189095_0x7jhuirb",
+    "timestamp": "2026-02-03T05:39:49.095Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p2",
+    "actorName": "Team Shadow",
+    "targetId": "p1",
+    "targetName": "Team Inferno",
+    "data": {
+      "matchId": "match_1770097189021",
+      "won": true,
+      "turns": 10
+    },
+    "id": "act_1770097189044_y72wn1u79",
+    "timestamp": "2026-02-03T05:39:49.044Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Nature",
+    "targetId": "p2",
+    "targetName": "Team Mind",
+    "data": {
+      "matchId": "match_1770097189000",
+      "won": true,
+      "turns": 11
+    },
+    "id": "act_1770097189020_l61rq6rzp",
+    "timestamp": "2026-02-03T05:39:49.020Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Shadow",
+    "targetId": "p2",
+    "targetName": "Team Inferno",
+    "data": {
+      "matchId": "match_1770097188982",
+      "won": true,
+      "turns": 10
+    },
+    "id": "act_1770097188999_3wj4bdxlu",
+    "timestamp": "2026-02-03T05:39:48.999Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Tsunami",
+    "targetId": "p2",
+    "targetName": "Team Inferno",
+    "data": {
+      "matchId": "match_1770097188936",
+      "won": true,
+      "turns": 9
+    },
+    "id": "act_1770097188952_qf0oy0pk1",
+    "timestamp": "2026-02-03T05:39:48.952Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Mind",
+    "targetId": "p2",
+    "targetName": "Team Inferno",
+    "data": {
+      "matchId": "match_1770097188920",
+      "won": true,
+      "turns": 10
+    },
+    "id": "act_1770097188935_dwwfixxir",
+    "timestamp": "2026-02-03T05:39:48.935Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p2",
+    "actorName": "Team Inferno",
+    "targetId": "p1",
+    "targetName": "Team Nature",
+    "data": {
+      "matchId": "match_1770097188903",
+      "won": true,
+      "turns": 9
+    },
+    "id": "act_1770097188920_6sk8zhoku",
+    "timestamp": "2026-02-03T05:39:48.920Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Nature",
+    "targetId": "p2",
+    "targetName": "Team Shadow",
+    "data": {
+      "matchId": "match_1770097188887",
+      "won": true,
+      "turns": 11
+    },
+    "id": "act_1770097188903_nohq0b0pt",
+    "timestamp": "2026-02-03T05:39:48.903Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p2",
+    "actorName": "Team Nature",
+    "targetId": "p1",
+    "targetName": "Team Shadow",
+    "data": {
+      "matchId": "match_1770097188873",
+      "won": true,
+      "turns": 11
+    },
+    "id": "act_1770097188886_ygfz182tr",
+    "timestamp": "2026-02-03T05:39:48.886Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Nature",
+    "targetId": "p2",
+    "targetName": "Team Tsunami",
+    "data": {
+      "matchId": "match_1770097188857",
+      "won": true,
+      "turns": 13
+    },
+    "id": "act_1770097188872_7clle2u3h",
+    "timestamp": "2026-02-03T05:39:48.872Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Inferno",
+    "targetId": "p2",
+    "targetName": "Team Nature",
+    "data": {
+      "matchId": "match_1770097188848",
+      "won": true,
+      "turns": 9
+    },
+    "id": "act_1770097188857_e4rexrdtu",
+    "timestamp": "2026-02-03T05:39:48.857Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Shadow",
+    "targetId": "p2",
+    "targetName": "Team Mind",
+    "data": {
+      "matchId": "match_1770097188838",
+      "won": true,
+      "turns": 8
+    },
+    "id": "act_1770097188848_rhd8tfow4",
+    "timestamp": "2026-02-03T05:39:48.848Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Tsunami",
+    "targetId": "p2",
+    "targetName": "Team Inferno",
+    "data": {
+      "matchId": "match_1770097188828",
+      "won": true,
+      "turns": 9
+    },
+    "id": "act_1770097188837_a2lbkv1vv",
+    "timestamp": "2026-02-03T05:39:48.837Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p2",
+    "actorName": "Team Shadow",
+    "targetId": "p1",
+    "targetName": "Team Inferno",
+    "data": {
+      "matchId": "match_1770097020974",
+      "won": true,
+      "turns": 10
+    },
+    "id": "act_1770097020975_qgad1bepr",
+    "timestamp": "2026-02-03T05:37:00.975Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p2",
+    "actorName": "Team Tsunami",
+    "targetId": "p1",
+    "targetName": "Team Inferno",
+    "data": {
+      "matchId": "match_1770097020969",
+      "won": true,
+      "turns": 9
+    },
+    "id": "act_1770097020971_2urmgdnsv",
+    "timestamp": "2026-02-03T05:37:00.971Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p2",
+    "actorName": "Team Nature",
+    "targetId": "p1",
+    "targetName": "Team Shadow",
+    "data": {
+      "matchId": "match_1770097020960",
+      "won": true,
+      "turns": 11
+    },
+    "id": "act_1770097020963_9reqmikfe",
+    "timestamp": "2026-02-03T05:37:00.963Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Tsunami",
+    "targetId": "p2",
+    "targetName": "Team Inferno",
+    "data": {
+      "matchId": "match_1770097020954",
+      "won": true,
+      "turns": 9
+    },
+    "id": "act_1770097020956_hlst27gqb",
+    "timestamp": "2026-02-03T05:37:00.956Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p2",
+    "actorName": "Team Tsunami",
+    "targetId": "p1",
+    "targetName": "Team Inferno",
+    "data": {
+      "matchId": "match_1770097020947",
+      "won": true,
+      "turns": 9
+    },
+    "id": "act_1770097020950_zllkwou00",
+    "timestamp": "2026-02-03T05:37:00.950Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p2",
+    "actorName": "Team Shadow",
+    "targetId": "p1",
+    "targetName": "Team Tsunami",
+    "data": {
+      "matchId": "match_1770097020941",
+      "won": true,
+      "turns": 11
+    },
+    "id": "act_1770097020944_ckhi6ypc0",
+    "timestamp": "2026-02-03T05:37:00.944Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Mind",
+    "targetId": "p2",
+    "targetName": "Team Inferno",
+    "data": {
+      "matchId": "match_1770097020929",
+      "won": true,
+      "turns": 10
+    },
+    "id": "act_1770097020932_9lffb5c8u",
+    "timestamp": "2026-02-03T05:37:00.932Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Nature",
+    "targetId": "p2",
+    "targetName": "Team Mind",
+    "data": {
+      "matchId": "match_1770097020922",
+      "won": true,
+      "turns": 11
+    },
+    "id": "act_1770097020925_9xj7m31r5",
+    "timestamp": "2026-02-03T05:37:00.925Z"
+  },
+  {
+    "type": "match_result",
+    "actorId": "p1",
+    "actorName": "Team Thunder",
+    "targetId": "p2",
+    "targetName": "Team Tsunami",
+    "data": {
+      "matchId": "match_1770097020910",
+      "won": true,
+      "turns": 7
+    },
+    "id": "act_1770097020916_vj7794jpu",
+    "timestamp": "2026-02-03T05:37:00.916Z"
+  }
+]
