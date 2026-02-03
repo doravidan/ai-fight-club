@@ -6,10 +6,35 @@ const db = createClient({
   authToken: process.env.TURSO_AUTH_TOKEN,
 });
 
+async function ensureBotColumns() {
+  const columns = [
+    { name: 'description', type: 'TEXT' },
+    { name: 'api_key', type: 'TEXT' },
+    { name: 'claim_token', type: 'TEXT' },
+    { name: 'verification_code', type: 'TEXT' },
+    { name: 'status', type: 'TEXT DEFAULT "pending_claim"' },
+    { name: 'claimed_at', type: 'TEXT' },
+    { name: 'owner_twitter_handle', type: 'TEXT' },
+    { name: 'owner_twitter_id', type: 'TEXT' },
+    { name: 'owner_verified_at', type: 'TEXT' },
+  ];
+
+  for (const column of columns) {
+    try {
+      await db.execute(`ALTER TABLE bots ADD COLUMN ${column.name} ${column.type}`);
+    } catch (error: any) {
+      const message = String(error?.message || '').toLowerCase();
+      if (!message.includes('duplicate column')) {
+        throw error;
+      }
+    }
+  }
+}
+
 // Initialize tables
 export async function initDatabase() {
   console.log('Initializing database...');
-  
+
   // Bots/Players table
   await db.execute(`
     CREATE TABLE IF NOT EXISTS bots (
@@ -23,7 +48,9 @@ export async function initDatabase() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  
+
+  await ensureBotColumns();
+
   // Matches table
   await db.execute(`
     CREATE TABLE IF NOT EXISTS matches (
@@ -43,12 +70,15 @@ export async function initDatabase() {
       FOREIGN KEY (bot2_id) REFERENCES bots(id)
     )
   `);
-  
+
   // Create indexes
   await db.execute(`CREATE INDEX IF NOT EXISTS idx_bots_name ON bots(name)`);
   await db.execute(`CREATE INDEX IF NOT EXISTS idx_bots_elo ON bots(elo DESC)`);
+  await db.execute(`CREATE INDEX IF NOT EXISTS idx_bots_status ON bots(status)`);
+  await db.execute(`CREATE UNIQUE INDEX IF NOT EXISTS idx_bots_api_key ON bots(api_key)`);
+  await db.execute(`CREATE UNIQUE INDEX IF NOT EXISTS idx_bots_claim_token ON bots(claim_token)`);
   await db.execute(`CREATE INDEX IF NOT EXISTS idx_matches_created ON matches(created_at DESC)`);
-  
+
   console.log('Database initialized!');
 }
 

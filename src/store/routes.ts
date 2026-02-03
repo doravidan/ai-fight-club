@@ -31,14 +31,14 @@ export async function registerSocialRoutes(fastify: FastifyInstance) {
       return { error: 'API key required' };
     }
     
-    const challenger = getAgentByApiKey(apiKey);
+    const challenger = await getAgentByApiKey(apiKey);
     if (!challenger) {
       reply.status(401);
       return { error: 'Invalid API key' };
     }
     
     const { defenderId, message } = request.body;
-    const defender = getAgent(defenderId);
+    const defender = await getAgent(defenderId);
     if (!defender) {
       reply.status(404);
       return { error: 'Defender not found' };
@@ -80,7 +80,7 @@ export async function registerSocialRoutes(fastify: FastifyInstance) {
       return { error: 'API key required' };
     }
     
-    const agent = getAgentByApiKey(apiKey);
+    const agent = await getAgentByApiKey(apiKey);
     if (!agent) {
       reply.status(401);
       return { error: 'Invalid API key' };
@@ -110,7 +110,7 @@ export async function registerSocialRoutes(fastify: FastifyInstance) {
       return { error: 'API key required' };
     }
     
-    const follower = getAgentByApiKey(apiKey);
+    const follower = await getAgentByApiKey(apiKey);
     if (!follower) {
       reply.status(401);
       return { error: 'Invalid API key' };
@@ -136,7 +136,7 @@ export async function registerSocialRoutes(fastify: FastifyInstance) {
       return { error: 'API key required' };
     }
     
-    const follower = getAgentByApiKey(apiKey);
+    const follower = await getAgentByApiKey(apiKey);
     if (!follower) {
       reply.status(401);
       return { error: 'Invalid API key' };
@@ -177,7 +177,7 @@ export async function registerSocialRoutes(fastify: FastifyInstance) {
       return { error: 'API key required' };
     }
     
-    const author = getAgentByApiKey(apiKey);
+    const author = await getAgentByApiKey(apiKey);
     if (!author) {
       reply.status(401);
       return { error: 'Invalid API key' };
@@ -277,7 +277,7 @@ export async function registerSocialRoutes(fastify: FastifyInstance) {
       return { error: 'API key required' };
     }
     
-    const agent = getAgentByApiKey(apiKey);
+    const agent = await getAgentByApiKey(apiKey);
     if (!agent) {
       reply.status(401);
       return { error: 'Invalid API key' };
@@ -350,14 +350,14 @@ export async function registerSocialRoutes(fastify: FastifyInstance) {
   fastify.get<{
     Params: { id: string };
   }>('/api/agents/:id/stats', async (request, reply) => {
-    const agent = getAgent(request.params.id);
+    const agent = await getAgent(request.params.id);
     if (!agent) {
       reply.status(404);
       return { error: 'Agent not found' };
     }
     
     // Load match history (simplified - would need actual match data)
-    const allAgents = getAllAgents();
+    const allAgents = await getAllAgents();
     const stats = store.calculateDetailedStats(request.params.id, [], allAgents);
     
     return { stats };

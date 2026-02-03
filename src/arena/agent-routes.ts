@@ -26,7 +26,7 @@ export async function registerAgentRoutes(fastify: FastifyInstance) {
     }
     
     try {
-      const { agent, apiKey, claimUrl } = agents.registerAgent(
+      const { agent, apiKey, claimUrl } = await agents.registerAgent(
         name, 
         description || '', 
         callbackUrl
@@ -88,7 +88,7 @@ export async function registerAgentRoutes(fastify: FastifyInstance) {
     }
     
     const apiKey = authHeader.slice(7);
-    const agent = agents.getAgentByApiKey(apiKey);
+    const agent = await agents.getAgentByApiKey(apiKey);
     
     if (!agent) {
       reply.status(401);
@@ -126,7 +126,7 @@ export async function registerAgentRoutes(fastify: FastifyInstance) {
     }
     
     const apiKey = authHeader.slice(7);
-    const agent = agents.getAgentByApiKey(apiKey);
+    const agent = await agents.getAgentByApiKey(apiKey);
     
     if (!agent) {
       reply.status(401);
@@ -165,7 +165,7 @@ export async function registerAgentRoutes(fastify: FastifyInstance) {
   fastify.get<{
     Params: { token: string }
   }>('/api/claim/:token', async (request, reply) => {
-    const agent = agents.getAgentByClaimToken(request.params.token);
+    const agent = await agents.getAgentByClaimToken(request.params.token);
     
     if (!agent) {
       reply.status(404);
@@ -214,7 +214,7 @@ export async function registerAgentRoutes(fastify: FastifyInstance) {
       return { success: false, error: 'twitterHandle is required' };
     }
     
-    const agent = agents.getAgentByClaimToken(request.params.token);
+    const agent = await agents.getAgentByClaimToken(request.params.token);
     
     if (!agent) {
       reply.status(404);
@@ -231,7 +231,7 @@ export async function registerAgentRoutes(fastify: FastifyInstance) {
     // In production, use Twitter API to search for the verification code
     
     try {
-      const claimedAgent = agents.claimAgent(
+      const claimedAgent = await agents.claimAgent(
         request.params.token,
         twitterHandle.replace('@', '')
       );
@@ -265,7 +265,7 @@ export async function registerAgentRoutes(fastify: FastifyInstance) {
   fastify.get<{
     Params: { name: string }
   }>('/api/agents/profile/:name', async (request, reply) => {
-    const agent = agents.getAgentByName(request.params.name);
+    const agent = await agents.getAgentByName(request.params.name);
     
     if (!agent) {
       reply.status(404);
@@ -290,7 +290,7 @@ export async function registerAgentRoutes(fastify: FastifyInstance) {
         win_rate: agent.gamesPlayed > 0 
           ? (agent.wins / agent.gamesPlayed * 100).toFixed(1) + '%' 
           : 'N/A',
-        rank: agents.getLeaderboard(100).findIndex(a => a.id === agent.id) + 1 || 'Unranked',
+        rank: (await agents.getLeaderboard(100)).findIndex(a => a.id === agent.id) + 1 || 'Unranked',
         created_at: agent.createdAt.toISOString(),
         owner: agent.owner ? {
           twitter_handle: agent.owner.twitterHandle,
@@ -308,7 +308,7 @@ export async function registerAgentRoutes(fastify: FastifyInstance) {
     Querystring: { limit?: string }
   }>('/api/agents/leaderboard', async (request) => {
     const limit = Math.min(parseInt(request.query.limit || '20'), 100);
-    const leaderboard = agents.getLeaderboard(limit);
+    const leaderboard = await agents.getLeaderboard(limit);
     
     return {
       success: true,
@@ -323,7 +323,7 @@ export async function registerAgentRoutes(fastify: FastifyInstance) {
           : 'N/A',
         owner: agent.owner?.twitterHandle,
       })),
-      total_agents: agents.getAllAgents().filter(a => a.status !== 'pending_claim').length,
+      total_agents: (await agents.getAllAgents()).filter(a => a.status !== 'pending_claim').length,
     };
   });
 }
