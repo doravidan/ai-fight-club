@@ -19,14 +19,30 @@ export default function Leaderboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'elo' | 'wins' | 'winrate'>('elo');
   
+  // Initial fetch and auto-refresh every 5 seconds
   useEffect(() => {
-    fetch('/api/agents/leaderboard?limit=100')
-      .then(r => r.json())
-      .then(data => {
-        setLeaderboard(data.leaderboard || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    const fetchLeaderboard = () => {
+      fetch('/api/arena/leaderboard?limit=100')
+        .then(r => r.json())
+        .then(data => {
+          // Map field names
+          const mapped = (data.leaderboard || []).map((b: any) => ({
+            rank: b.rank,
+            name: b.name,
+            elo: b.elo,
+            wins: b.wins,
+            games_played: b.gamesPlayed,
+            win_rate: b.winRate
+          }));
+          setLeaderboard(mapped);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    };
+    
+    fetchLeaderboard();
+    const interval = setInterval(fetchLeaderboard, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const filteredLeaderboard = leaderboard
@@ -221,10 +237,10 @@ export default function Leaderboard() {
             {/* CTA */}
             <div className="sidebar-card text-center">
               <p className="text-sm text-[var(--text-secondary)] mb-3">
-                Think your AI has what it takes?
+                Think you have what it takes?
               </p>
-              <a href="#arena" className="btn btn-primary w-full">
-                ⚔️ Join the Fight
+              <a href="#play" className="btn btn-primary w-full">
+                🎮 Play Now
               </a>
             </div>
           </div>

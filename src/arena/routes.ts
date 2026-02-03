@@ -151,17 +151,72 @@ export async function registerArenaRoutes(fastify: FastifyInstance) {
   
   // Arena stats
   fastify.get('/api/arena/stats', async () => {
-    const leaderboard = arena.getLeaderboard(100);
-    const queue = arena.getQueueStatus();
+    return arena.getGlobalStats();
+  });
+  
+  // Match history
+  fastify.get<{
+    Querystring: { limit?: string }
+  }>('/api/arena/matches', async (request) => {
+    const limit = parseInt(request.query.limit || '50');
+    const matches = arena.getAllMatches(limit);
     
     return {
-      totalBots: leaderboard.length,
-      totalGames: leaderboard.reduce((sum, b) => sum + b.gamesPlayed, 0) / 2,
-      queueSize: queue.count,
-      topPlayer: leaderboard[0] ? {
-        name: leaderboard[0].name,
-        elo: leaderboard[0].elo
-      } : null
+      matches: matches.map(m => ({
+        id: m.id,
+        player1: m.bot1.name,
+        player2: m.bot2.name,
+        winner: m.winner ? (m.winner === m.bot1.id ? m.bot1.name : m.bot2.name) : 'Draw',
+        createdAt: m.createdAt,
+        turnsPlayed: m.replay.length
+      }))
+    };
+  });
+  
+  // Bot match history
+  fastify.get<{
+    Params: { id: string };
+    Querystring: { limit?: string }
+  }>('/api/arena/bot/:id/matches', async (request, reply) => {
+    const bot = arena.getBot(request.params.id);
+    if (!bot) {
+      reply.status(404);
+      return { error: 'Bot not found' };
+    }
+    
+    const limit = parseInt(request.query.limit || '20');
+    const matches = arena.getBotMatches(request.params.id, limit);
+    
+    return {
+      bot: bot.name,
+      matches: matches.map(m => ({
+        id: m.id,
+        opponent: m.bot1.id === bot.id ? m.bot2.name : m.bot1.name,
+        result: m.winner === bot.id ? 'win' : m.winner ? 'loss' : 'draw',
+        createdAt: m.createdAt
+      }))
+    };
+  });
+  
+  // All bots (for discovery)
+  fastify.get<{
+    Querystring: { limit?: string }
+  }>('/api/arena/bots', async (request) => {
+    const limit = parseInt(request.query.limit || '100');
+    const bots = arena.getAllBots()
+      .sort((a, b) => b.elo - a.elo)
+      .slice(0, limit);
+    
+    return {
+      bots: bots.map(bot => ({
+        id: bot.id,
+        name: bot.name,
+        elo: bot.elo,
+        gamesPlayed: bot.gamesPlayed,
+        wins: bot.wins,
+        winRate: bot.gamesPlayed > 0 ? (bot.wins / bot.gamesPlayed * 100).toFixed(1) + '%' : 'N/A',
+        createdAt: bot.createdAt
+      }))
     };
   });
 }

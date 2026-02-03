@@ -1,6 +1,8 @@
 // Arena service - matchmaking, game execution, rankings
+// With persistent file storage
 
 import crypto from 'crypto';
+import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
 import {
   RegisteredBot, ArenaMatch, WebhookPayload, BotResponse,
   GameStateForBot, TurnRecord, calculateEloChange
@@ -9,9 +11,79 @@ import { TeamConfig } from '../match/runner.js';
 import { FighterCard, Player } from '../engine/types.js';
 import { processTurn, checkWinner } from '../engine/combat.js';
 
-// In-memory storage (replace with DB in production)
-const bots = new Map<string, RegisteredBot>();
-const matches = new Map<string, ArenaMatch>();
+// Data directory
+const DATA_DIR = './data';
+const BOTS_FILE = `${DATA_DIR}/bots.json`;
+const MATCHES_FILE = `${DATA_DIR}/matches.json`;
+
+// Ensure data directory exists
+if (!existsSync(DATA_DIR)) {
+  mkdirSync(DATA_DIR, { recursive: true });
+}
+
+// Load persisted data
+function loadBots(): Map<string, RegisteredBot> {
+  try {
+    if (existsSync(BOTS_FILE)) {
+      const data = JSON.parse(readFileSync(BOTS_FILE, 'utf-8'));
+      const map = new Map<string, RegisteredBot>();
+      for (const bot of data) {
+        bot.createdAt = new Date(bot.createdAt);
+        map.set(bot.id, bot);
+      }
+      console.log(`Loaded ${map.size} bots from storage`);
+      return map;
+    }
+  } catch (e) {
+    console.error('Failed to load bots:', e);
+  }
+  return new Map();
+}
+
+function loadMatches(): Map<string, ArenaMatch> {
+  try {
+    if (existsSync(MATCHES_FILE)) {
+      const data = JSON.parse(readFileSync(MATCHES_FILE, 'utf-8'));
+      const map = new Map<string, ArenaMatch>();
+      for (const match of data) {
+        match.createdAt = new Date(match.createdAt);
+        if (match.finishedAt) match.finishedAt = new Date(match.finishedAt);
+        map.set(match.id, match);
+      }
+      console.log(`Loaded ${map.size} matches from storage`);
+      return map;
+    }
+  } catch (e) {
+    console.error('Failed to load matches:', e);
+  }
+  return new Map();
+}
+
+function saveBots(): void {
+  try {
+    const data = Array.from(bots.values());
+    writeFileSync(BOTS_FILE, JSON.stringify(data, null, 2));
+  } catch (e) {
+    console.error('Failed to save bots:', e);
+  }
+}
+
+function saveMatches(): void {
+  try {
+    // Only save last 1000 matches to prevent file bloat
+    const allMatches = Array.from(matches.values());
+    const recentMatches = allMatches
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 1000);
+    writeFileSync(MATCHES_FILE, JSON.stringify(recentMatches, null, 2));
+  } catch (e) {
+    console.error('Failed to save matches:', e);
+  }
+}
+
+// Persistent storage
+const bots = loadBots();
+const matches = loadMatches();
 const matchQueue: string[] = [];
 
 // Default team for bots (they can customize via callback)
@@ -65,6 +137,7 @@ export function registerBot(name: string, callbackUrl: string): { bot: Registere
   };
   
   bots.set(id, bot);
+  saveBots();
   
   return { bot, token };
 }
@@ -74,10 +147,37 @@ export function getBot(id: string): RegisteredBot | undefined {
   return bots.get(id);
 }
 
+// Get bot by name
+export function getBotByName(name: string): RegisteredBot | undefined {
+  return Array.from(bots.values()).find(b => b.name.toLowerCase() === name.toLowerCase());
+}
+
+// Get all bots
+export function getAllBots(): RegisteredBot[] {
+  return Array.from(bots.values());
+}
+
 // Get leaderboard
 export function getLeaderboard(limit: number = 10): RegisteredBot[] {
   return Array.from(bots.values())
+    .filter(b => b.gamesPlayed > 0)
     .sort((a, b) => b.elo - a.elo)
+    .slice(0, limit);
+}
+
+// Get all matches (for history)
+export function getAllMatches(limit: number = 100): ArenaMatch[] {
+  return Array.from(matches.values())
+    .filter(m => m.status === 'finished')
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, limit);
+}
+
+// Get matches for a specific bot
+export function getBotMatches(botId: string, limit: number = 20): ArenaMatch[] {
+  return Array.from(matches.values())
+    .filter(m => m.status === 'finished' && (m.bot1.id === botId || m.bot2.id === botId))
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, limit);
 }
 
@@ -141,6 +241,7 @@ function createMatch(bot1: RegisteredBot, bot2: RegisteredBot): ArenaMatch {
   };
   
   matches.set(id, match);
+  saveMatches();
   
   return match;
 }
@@ -348,6 +449,7 @@ export async function runMatch(matchId: string): Promise<void> {
 async function finishMatch(match: ArenaMatch, winnerId: string | null): Promise<void> {
   match.status = 'finished';
   match.winner = winnerId || undefined;
+  (match as any).finishedAt = new Date();
   
   const bot1 = bots.get(match.bot1.id)!;
   const bot2 = bots.get(match.bot2.id)!;
@@ -374,6 +476,10 @@ async function finishMatch(match: ArenaMatch, winnerId: string | null): Promise<
     notifyResult(bot1, match.id, 'draw', 0);
     notifyResult(bot2, match.id, 'draw', 0);
   }
+  
+  // Persist updates
+  saveBots();
+  saveMatches();
 }
 
 // Notify bot of match result
@@ -410,5 +516,19 @@ export function getQueueStatus(): { count: number; bots: string[] } {
   return {
     count: matchQueue.length,
     bots: matchQueue.map(id => bots.get(id)?.name || id)
+  };
+}
+
+// Get global stats
+export function getGlobalStats() {
+  const allBots = Array.from(bots.values());
+  const allMatches = Array.from(matches.values()).filter(m => m.status === 'finished');
+  const topPlayer = getLeaderboard(1)[0];
+  
+  return {
+    totalBots: allBots.length,
+    totalGames: allMatches.length,
+    queueSize: matchQueue.length,
+    topPlayer: topPlayer ? { name: topPlayer.name, elo: topPlayer.elo } : null
   };
 }
