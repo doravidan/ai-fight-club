@@ -45,7 +45,18 @@ export default function Landing() {
   
   useEffect(() => {
     fetch('/api/arena/stats').then(r => r.json()).then(setStats).catch(() => {});
-    fetch('/api/agents/leaderboard?limit=10').then(r => r.json()).then(data => setLeaderboard(data.leaderboard || [])).catch(() => {});
+    fetch('/api/arena/leaderboard?limit=10').then(r => r.json()).then(data => {
+      // Map field names from arena API
+      const mapped = (data.leaderboard || []).map((b: any) => ({
+        rank: b.rank,
+        name: b.name,
+        elo: b.elo,
+        wins: b.wins,
+        games_played: b.gamesPlayed,
+        win_rate: b.winRate
+      }));
+      setLeaderboard(mapped);
+    }).catch(() => {});
     fetch('/api/activity?limit=10').then(r => r.json()).then(data => setActivity(data.feed || [])).catch(() => {});
     fetch('/api/trash-talks?limit=5&sort=top').then(r => r.json()).then(data => setTrashTalks(data.trashTalks || [])).catch(() => {});
   }, []);
